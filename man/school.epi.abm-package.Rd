@@ -4,9 +4,9 @@
 \name{school.epi.abm-package}
 \alias{school.epi.abm}
 \alias{school.epi.abm-package}
-\title{school.epi.abm: An Amazing Shiny App}
+\title{school.epi.abm: A model of infectious disease epidemic and mitigation dynamics in K-6 schools}
 \description{
-This package implements an agent-based model of COVID dynamics in K6 schools, as described in https://www.medrxiv.org/content/10.1101/2021.02.27.21252535v1.
+This package implements an agent-based model of infectious disease epidemic and mitigation dynamics in K6 schools, as described in https://www.medrxiv.org/content/10.1101/2021.02.27.21252535v1.
 }
 \author{
 \strong{Maintainer}: Douglas Morrison \email{dmorrison01@ucla.edu}

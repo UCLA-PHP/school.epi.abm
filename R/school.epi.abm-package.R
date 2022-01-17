@@ -1,7 +1,7 @@
 #' @keywords internal
 #' @import dplyr
 #' @importFrom shiny tags
-#' @importFrom plotly plotlyOutput
+#' @importFrom plotly plotlyOutput renderPlotly
 #' @importFrom shiny tagList tags HTML h2 fluidRow uiOutput
 #' @importFrom shinydashboard dashboardPage dashboardHeader dashboardSidebar sidebarMenu menuItem dashboardBody tabItems tabItem box
 #' @importFrom lubridate days is.difftime as.period
@@ -10,6 +10,9 @@
 #' @importFrom magrittr %<>%
 #' @importFrom pryr mem_used
 #' @importFrom useful build.formula
+#' @importFrom shiny renderUI mainPanel h1 p br a observeEvent eventReactive withProgress
+#' @importFrom shinydashboard updateTabItems
+
 "_PACKAGE"
 
 ## usethis namespace: start
