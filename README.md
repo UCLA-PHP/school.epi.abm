@@ -15,7 +15,8 @@ infection and mitigation dynamics in K-6 schools, as described in
 You can install the development version of school.epi.abm like so:
 
 ``` r
-install_github("d-morrison/school.epi.abm")
+# install.packages("devtools") # if not already installed
+devtools::install_github("d-morrison/school.epi.abm")
 ```
 
 ## Examples

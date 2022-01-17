@@ -26,7 +26,8 @@ https://www.medrxiv.org/content/10.1101/2021.02.27.21252535v1.
 You can install the development version of school.epi.abm like so:
 
 ``` r
-install_github("d-morrison/school.epi.abm")
+# install.packages("devtools") # if not already installed
+devtools::install_github("d-morrison/school.epi.abm")
 ```
 
 ## Examples
