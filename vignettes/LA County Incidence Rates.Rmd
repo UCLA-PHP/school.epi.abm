@@ -1,0 +1,256 @@
+---
+title: "LA County COVID Incidence Rates"
+date: "9/27/2020"
+output:
+  html_document: default
+  pdf_document: default
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+rm(list = ls())
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(include = FALSE)
+library("dplyr")
+library('readxl')
+library(plotly)
+library(fs)
+library(lubridate)
+library(tidyr)
+library(magrittr)
+library(readr)
+library('scales')
+
+library("sf")
+library("stringr")
+
+options('digits' = 3)
+
+```
+
+```{r, "load data"}
+
+data_folder_path = path(
+  Sys.getenv("HOME"),
+  "Directory/Work/Projects/By_PI/Nianogo/COVID19 PopHealth Models/Data")
+
+data_path = path(
+  Sys.getenv("HOME"),
+  "Directory/Work/Projects/By_PI/Nianogo/COVID19 PopHealth Models/Data",
+  "LAC covid data simple.xlsx")
+```
+
+## looking at overall county cumulative case rates
+
+```{r, "load LATimes data"}
+
+data_path4 = 
+  "https://raw.githubusercontent.com/datadesk/california-coronavirus-data/master/latimes-place-totals.csv"
+
+data4a = read_csv(data_path4, col_types = cols(note = col_character())) %>% 
+  filter(county == "Los Angeles")
+
+
+
+# LBC_10_05 = data4a %>% filter(place == "Long Beach", date == "2020-10-05")
+# 
+# if(nrow(LBC_10_05) == 0)
+# {
+# temp =
+#   data4a %>% filter(place == "Long Beach", date %in% as.Date(c("2020-10-04", "2020-10-06"))) %>%
+#   group_by(county, fips, place, x, y, population)
+#   summarise()
+# }
+
+
+# data4a %<>% mutate(
+#   
+#   place = if_else(
+#     place == "Silver Lake",
+#     "Silverlake",
+#     place
+#   ),
+#   place = if_else(
+#     place == "Athens",
+#     "Athens-Westmont",
+#     place
+#   ),
+#   x = round(x, 3),
+#   y = round(y, 3)
+#   
+# ) 
+
+# print the data around the 4th:
+# data4a %>% filter(date %in% (ymd("2020/07/04") + c(0)))
+
+data4a %<>%
+  group_by(id) %>%
+  arrange(date) %>%
+  # fill(
+  #   .direction = "downup",
+  #   confirmed_cases, population, county, fips, x, y) %>%
+  mutate(
+    "new_cases" = 
+      confirmed_cases - lag(confirmed_cases, 1, default = NA),
+    "pct_infected_cumulative" = 
+      100*(confirmed_cases/population),
+    "new_cases_in_last_14_days" = 
+      confirmed_cases - lag(confirmed_cases, 14),
+    "pct_new_cases_in_last_14_days" = 
+      new_cases_in_last_14_days/population * 100
+  )
+
+data4 = data4a %>%
+  group_by(date) %>%
+  summarize(
+    .groups = 'drop',
+    across(
+      all_of(c(
+        "population",
+        "confirmed_cases",
+        "new_cases"
+        # "new_cases_in_last_14_days" # don't do this, introduces 0s instead of NAs at start
+        )),
+      function(x) sum(x, na.rm = TRUE)
+    )) %>%
+  mutate(
+    "new_cases_in_last_14_days" = 
+      confirmed_cases - lag(confirmed_cases, 14),
+    "pct_infected_cumulative" = 
+      100 * confirmed_cases / population,
+    "pct_new_cases_in_last_14_days" = 
+      100 * new_cases_in_last_14_days/population)
+
+
+```
+
+```{r}
+
+data_path3 = path(
+  data_folder_path,
+  "LA_County_Covid19_cases_deaths_date_table.csv")
+
+LAC_pop = tail(data4$population, 1)
+
+data3 = read_csv(data_path3, col_types = cols()) %>%
+  arrange(
+    date_use
+  ) %>%
+  mutate(
+    pct_infected_cumulative = 
+      100*(total_cases/LAC_pop),
+    new_cases_in_last_14_days = 
+      total_cases - lag(total_cases, 14),
+    pct_new_cases_in_last_14_days = new_cases_in_last_14_days/LAC_pop * 100) %>%
+  rename(date = date_use,
+         new_cases = new_case)
+
+```
+
+
+```{r}
+
+# last_date_graphed = as.Date("2020-12-11")
+last_date_graphed = as.Date("2021-12-04")
+
+legendstats <- list(
+  x = 0.2,
+  y = 1.1,
+  orientation = 'h',
+  font = list(
+    family = "sans-serif",
+    size = 12,
+    color = "#000")
+  # bgcolor = "#E2E2E2",
+  # bordercolor = "#FFFFFF",
+  # borderwidth = 2
+)
+
+cumulative_cases = plot_ly(
+  data = data3 %>% filter(date <= last_date_graphed),
+  x = ~date) %>%
+  add_trace(
+    y = ~pct_infected_cumulative, 
+    name = "Los Angeles County Dept. of Public Health",
+    type = "scatter",
+    mode = "lines") %>%
+  add_trace(
+    y = ~pct_infected_cumulative, 
+    data = data4 %>% filter(date <= last_date_graphed),
+    name = "Los Angeles Times",
+    type = "scatter",
+    mode = "lines") %>% 
+  layout(
+    legend = legendstats,
+    xaxis = list(title = "Date"),
+    yaxis = list(
+      title = "Confirmed COVID-19 cases (cumulative) per 100 residents"
+    )) %>%
+  print()
+
+
+```
+
+```{r}
+
+
+incident_cases = plot_ly(
+  data3 %>% filter(date <= last_date_graphed),
+  x = ~date
+) %>%
+  add_trace(
+    name = "Los Angeles County Dept. of Public Health",
+    type = "scatter",
+    mode = "lines",
+    y = ~I(new_cases/LAC_pop * 100)
+  ) %>% 
+  add_trace(
+    name = "Los Angeles Times",
+    type = 'scatter',
+    mode = "lines",
+    data = data4 %>% filter(date <= last_date_graphed),
+    x = ~date,
+    y = ~I(new_cases/population * 100)
+  ) %>%
+  layout(legend = legendstats,
+         xaxis = list(title = "Date"),
+         yaxis = list(
+           title = "New COVID-19 diagnoses per 100 residents"
+         )) %>%
+  print()
+
+
+```
+
+
+```{r}
+
+prevalent_cases = plot_ly(
+  data3 %>% filter(date <= last_date_graphed),
+  x = ~date
+) %>%
+  add_trace(
+    name = "Los Angeles County Dept. of Public Health",
+    type = "scatter",
+    mode = "lines",
+    y = ~pct_new_cases_in_last_14_days
+  ) %>% 
+  add_trace(
+    name = "Los Angeles Times",
+    type = 'scatter',
+    mode = "lines",
+    data = data4 %>% filter(date <= last_date_graphed),
+    x = ~date,
+    y = ~pct_new_cases_in_last_14_days
+  ) %>%
+  layout(legend = legendstats,
+         xaxis = list(title = "Date"),
+         yaxis = list(
+           title = "Cases detected in the preceding 14 days, per 100 residents"
+         )) %>%
+  print()
+
+
+```
+
