@@ -2,7 +2,7 @@
 % Please edit documentation in R/run_simulation.R
 \name{run_simulation}
 \alias{run_simulation}
-\title{Title}
+\title{Run the agent-based model}
 \usage{
 run_simulation(
   n_schools = 1000,
@@ -29,9 +29,10 @@ run_simulation(
   `peak test sensitivity` = 0.95,
   `days of peak test sensitivity` = days(3),
   `test sensitivity on last day of symptoms` = 0.5,
-  `daily decrease in sensitivity from peak until recovery` = (`test sensitivity on last
-    day of symptoms` - `peak test sensitivity`) * (days(1)/(last_active_infection_day -
-    (days(4) + `days of peak test sensitivity`))),
+ 
+    `daily decrease in sensitivity from peak until recovery` = (`test sensitivity on last day of symptoms`
+    - `peak test sensitivity`) * (days(1)/(last_active_infection_day - (days(4) +
+    `days of peak test sensitivity`))),
   `decrease in sensitivity per day after recovery` = 0.1,
   attestation_sensitivity_symptomatic = 0.9,
   attestation_sensitivity_asymptomatic = max(0.1, 1 - attestation_specificity),
@@ -227,9 +228,9 @@ run_simulation(
 
 \item{plot3_ymax}{}
 
-\item{in_shiny}{}
+\item{in_shiny}{used to provide progress reporting to the dashboard when running the model through the Shiny GUI}
 
-\item{`peak}{test sensitivity`}
+\item{`peak}{test sensitivity` The maximum test sensitivity achieved during an infection}
 
 \item{`days}{of peak test sensitivity`}
 
@@ -239,9 +240,6 @@ run_simulation(
 
 \item{`decrease}{in sensitivity per day after recovery`}
 }
-\value{
-
-}
 \description{
-Title
+Run the agent-based model
 }

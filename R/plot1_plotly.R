@@ -470,8 +470,8 @@ plot1_plotly = function(
   #       name = "% enrolled students newly infected from school today")
   #   # geom_line(
   #   #   aes(
-  #   #     y = `% classrooms with 3+ infected attendees today today`,
-  #   #     col = "% classrooms with 3+ infected attendees today today")) +
+  #   #     y = `% classrooms with 3+ infected attendees today`,
+  #   #     col = "% classrooms with 3+ infected attendees today")) +
   
   
 }

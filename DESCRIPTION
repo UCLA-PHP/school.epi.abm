@@ -30,10 +30,12 @@ Imports:
     useful
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.0
 Suggests: 
     rmarkdown,
-    beepr
+    beepr,
+    readr,
+    DescTools
 VignetteBuilder: knitr
 Depends: 
     R (>= 2.10)

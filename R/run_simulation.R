@@ -1,4 +1,4 @@
-#' Title
+#' Run the agent-based model
 #'
 #' @param n_schools 
 #' @param n_grades_per_school 
@@ -13,14 +13,6 @@
 #' @param test_specificity 
 #' @param test_sensitivity_day_0 
 #' @param test_sensitivity_day_1 
-#' @param `test sensitivity day 2` 
-#' @param `test sensitivity day 3` 
-#' @param `test sensitivity day 4` 
-#' @param `peak test sensitivity` 
-#' @param `days of peak test sensitivity` 
-#' @param `test sensitivity on last day of symptoms` 
-#' @param `daily decrease in sensitivity from peak until recovery` 
-#' @param `decrease in sensitivity per day after recovery` 
 #' @param attestation_sensitivity_symptomatic 
 #' @param attestation_sensitivity_asymptomatic 
 #' @param attestation_sensitivity_presymptomatic 
@@ -73,7 +65,15 @@
 #' @param verbose 
 #' @param plot_data 
 #' @param plot3_ymax 
-#' @param in_shiny 
+#' @param in_shiny used to provide progress reporting to the dashboard when running the model through the Shiny GUI
+#' @param `test sensitivity day 2` 
+#' @param `test sensitivity day 3` 
+#' @param `test sensitivity day 4` 
+#' @param `peak test sensitivity` The maximum test sensitivity achieved during an infection
+#' @param `days of peak test sensitivity` 
+#' @param `test sensitivity on last day of symptoms` 
+#' @param `daily decrease in sensitivity from peak until recovery` 
+#' @param `decrease in sensitivity per day after recovery` 
 #'
 #' @return
 #' @export
@@ -660,7 +660,7 @@ run_simulation = function(
         
         if(in_shiny)
         {
-          incProgress(1/nrow(calendar), detail = paste("Day ", i, " of ", nrow(calendar)))
+          shiny::incProgress(1/nrow(calendar), detail = paste("Day ", i, " of ", nrow(calendar)))
         }
         
         cur_message = paste(

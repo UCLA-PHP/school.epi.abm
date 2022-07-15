@@ -27,7 +27,7 @@ You can install the development version of school.epi.abm like so:
 
 ``` r
 # install.packages("devtools") # if not already installed
-devtools::install_github("d-morrison/school.epi.abm")
+devtools::install_github("UCLA-PHP/school.epi.abm")
 ```
 
 ## Examples
@@ -54,7 +54,7 @@ simulation_outputs = run_simulation(
 
 We can summarize and visualize the results as follows: 
 
-```{r, eval = FALSE}
+```{r, eval = TRUE}
 
 average_class_data_by_day = summarize_records(simulation_outputs$class_records)
 

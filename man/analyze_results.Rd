@@ -9,9 +9,6 @@ analyze_results(simulation_outputs)
 \arguments{
 \item{simulation_outputs}{}
 }
-\value{
-
-}
 \description{
 Title
 }

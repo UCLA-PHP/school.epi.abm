@@ -18,7 +18,8 @@ summarize_records(
     "n_household_adults_associated_with_class",
     "n household adults educated about COVID safety",
     "n household adults newly infected today",
-    "n household adults infected from exogenous source today",     
+    "n household adults infected from exogenous source today", 
+    
     "n household adults infected by student today",
     "n household adults infected (cumulative)",
     "n household adults infected from exogenous sources (cumulative)",
@@ -27,7 +28,8 @@ summarize_records(
     "n household adults infected by other household adult (cumulative)",
     "n_symptomatic_students_in_classroom_today", "n_students_in_attendance_today",
     "n_students_on_roster", "n students newly infected today",
-    "n students educated about COVID safety (cumulative)",     
+    "n students educated about COVID safety (cumulative)", 
+    
     "n_students_infected_cumulative", "n_students_infected_since_baseline_cumulative",
     "n students infected from exogenous sources (cumulative)",
     "n students infected by household adult (cumulative)",
@@ -36,7 +38,8 @@ summarize_records(
     "n_initially_uninfected_students_in_classroom_today",
     "n_transmissions_in_class_today",
     "n students newly infected from exogenous source today",
-    "n_infectious_students_in_classroom_today", "n_students_at_home_today",     
+    "n_infectious_students_in_classroom_today", "n_students_at_home_today", 
+    
     "n_uninfectious_students_at_home_today", "n_infectious_students_at_home_today",
     "n_initially_infected_students_in_classroom_today")), sum))
 )
@@ -49,9 +52,6 @@ summarize_records(
 \item{summary_grouping_columns}{}
 
 \item{school_records_by_date}{}
-}
-\value{
-
 }
 \description{
 Title
