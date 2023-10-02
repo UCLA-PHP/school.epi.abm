@@ -16,6 +16,8 @@
 "_PACKAGE"
 
 ## usethis namespace: start
+#' @importFrom here here
+#' @importFrom plotly layout
 ## usethis namespace: end
 NULL
 
