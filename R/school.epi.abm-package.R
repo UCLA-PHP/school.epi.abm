@@ -20,6 +20,7 @@
 #' @importFrom plotly add_trace
 #' @importFrom plotly layout
 #' @importFrom plotly plot_ly
+#' @importFrom plotly style
 ## usethis namespace: end
 NULL
 
