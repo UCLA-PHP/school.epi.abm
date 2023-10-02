@@ -21,7 +21,8 @@ library(tidyr)
 library(magrittr)
 library(readr)
 library('scales')
-
+library(conflicted)
+conflicts_prefer(plotly::layout)
 library("sf")
 library("stringr")
 
@@ -31,13 +32,12 @@ options('digits' = 3)
 
 ```{r, "load data"}
 
-data_folder_path = path(
-  Sys.getenv("HOME"),
-  "Directory/Work/Projects/By_PI/Nianogo/COVID19 PopHealth Models/Data")
+data_folder_path = path_package(
+  package = "school.epi.abm",
+  "extdata")
 
 data_path = path(
-  Sys.getenv("HOME"),
-  "Directory/Work/Projects/By_PI/Nianogo/COVID19 PopHealth Models/Data",
+  data_folder_path,
   "LAC covid data simple.xlsx")
 ```
 
@@ -52,44 +52,9 @@ data4a = read_csv(data_path4, col_types = cols(note = col_character())) %>%
   filter(county == "Los Angeles")
 
 
-
-# LBC_10_05 = data4a %>% filter(place == "Long Beach", date == "2020-10-05")
-# 
-# if(nrow(LBC_10_05) == 0)
-# {
-# temp =
-#   data4a %>% filter(place == "Long Beach", date %in% as.Date(c("2020-10-04", "2020-10-06"))) %>%
-#   group_by(county, fips, place, x, y, population)
-#   summarise()
-# }
-
-
-# data4a %<>% mutate(
-#   
-#   place = if_else(
-#     place == "Silver Lake",
-#     "Silverlake",
-#     place
-#   ),
-#   place = if_else(
-#     place == "Athens",
-#     "Athens-Westmont",
-#     place
-#   ),
-#   x = round(x, 3),
-#   y = round(y, 3)
-#   
-# ) 
-
-# print the data around the 4th:
-# data4a %>% filter(date %in% (ymd("2020/07/04") + c(0)))
-
 data4a %<>%
   group_by(id) %>%
   arrange(date) %>%
-  # fill(
-  #   .direction = "downup",
-  #   confirmed_cases, population, county, fips, x, y) %>%
   mutate(
     "new_cases" = 
       confirmed_cases - lag(confirmed_cases, 1, default = NA),
@@ -181,7 +146,7 @@ cumulative_cases = plot_ly(
     name = "Los Angeles Times",
     type = "scatter",
     mode = "lines") %>% 
-  layout(
+  plotly::layout(
     legend = legendstats,
     xaxis = list(title = "Date"),
     yaxis = list(

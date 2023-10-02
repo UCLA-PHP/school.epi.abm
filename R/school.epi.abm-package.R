@@ -16,6 +16,7 @@
 "_PACKAGE"
 
 ## usethis namespace: start
+#' @importFrom fs path_package
 #' @importFrom here here
 #' @importFrom plotly add_trace
 #' @importFrom plotly layout
