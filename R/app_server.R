@@ -12,14 +12,14 @@ app_server <- function( input, output, session ) {
   #   }
   # )
   
-  url <- "https://medrxiv.org/cgi/content/short/2021.02.27.21252535v1"
+  url <- "https://doi.org/10.3389/fpubh.2023.856940"
          
   url2 =  "https://github.com/d-morrison/school.epi.abm"
   
   # url2 = a("dmorrison01@ucla.edu", href = "dmorrison01@ucla.edu")
   message1 = "This model was created by Doug Morrison, Roch Nianogo, Vladimir Manuel, Onyebuchi A. Arah, Nathaniel Anderson, Tony Kuo, and Moira Inkelas at UCLA."
-  message2 = "Questions about the model can be sent to dmorrison01@ucla.edu."
-  message3 = "Download our article preprint from medRxiv:"
+  message2 = "Questions about the model can be sent to demorrison at ucdavis.edu."
+  message3 = "Download our article:"
   # message_full = paste(message1, message2, message3, sep = "\n")
   output$tab = 
     shiny::renderUI(shiny::mainPanel(
