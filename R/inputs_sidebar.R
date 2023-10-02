@@ -13,6 +13,7 @@ sidebar_column = function()
       ),
       
       actionButton(
+        class = "btn-success",
         inputId = "submit_loc",
         label = "Run simulation"), 
       tags$hr(),
