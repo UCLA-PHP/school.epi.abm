@@ -8,7 +8,7 @@
 
 The goal of school.epi.abm is to implement an agent-based model of COVID
 infection and mitigation dynamics in K-6 schools, as described in
-<https://www.medrxiv.org/content/10.1101/2021.02.27.21252535v1>.
+<https://doi.org/10.3389/fpubh.2023.856940>.
 
 ## Installation
 
