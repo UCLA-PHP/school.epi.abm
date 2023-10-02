@@ -1,4 +1,4 @@
-message("starting ", here::here(), "/.Rprofile")
+message("starting package .Rprofile")
 #myPaths = unique(c("/Users/dmorrison/Documents/R/win-library/4.0", "/Users/dmorrison/R/win-library/4.0",
 #.libPaths()))
 #.libPaths(myPaths)
@@ -34,4 +34,4 @@ options(
   usethis.protocol  = "ssh"
 )
 
-message("Ending ", here::here(), "/.Rprofile")
+message("Ending package .Rprofile")
