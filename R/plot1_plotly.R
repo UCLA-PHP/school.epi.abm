@@ -1,3 +1,17 @@
+#' Title
+#'
+#' @param class_records 
+#' @param average_class_data_by_day 
+#' @param plot3_ymax 
+#' @param plot4_ymax 
+#' @param plot5_ymax 
+#' @param x1 
+#' @param x2 
+#' @param x3 
+#'
+#' @return
+#' @export
+#'
 plot1_plotly = function(
   class_records, 
   average_class_data_by_day = summarize_records(class_records),

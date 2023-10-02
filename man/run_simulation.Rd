@@ -10,14 +10,12 @@ run_simulation(
   n_classes_per_school = n_grades_per_school * ceiling(60/n_students_per_class),
   n_students_per_class = 15,
   n_weeks_in_time_window = 4 * 2,
- 
-    pr_student_infected_per_infectious_household_adult_per_day = p_infect_per_day(p_infect
+  pr_student_infected_per_infectious_household_adult_per_day = p_infect_per_day(p_infect
     = 0.16, n_days_infectious = n_days_infectious),
-  pr_household_adult_infected_by_infectious_student_per_day = p_infect_per_day(p_infect
-    = 0.4, n_days_infectious = n_days_infectious),
- 
-    pr_household_adult_infected_per_infectious_household_adult_per_day = p_infect_per_day(p_infect
-    = 0.4, n_days_infectious = n_days_infectious),
+  pr_household_adult_infected_by_infectious_student_per_day = p_infect_per_day(p_infect =
+    0.4, n_days_infectious = n_days_infectious),
+  pr_household_adult_infected_per_infectious_household_adult_per_day =
+    p_infect_per_day(p_infect = 0.4, n_days_infectious = n_days_infectious),
   pr_student_symptomatic_if_infected = 0.5,
   pr_adult_symptomatic_if_infected = 0.7,
   test_specificity = 0.999,
@@ -29,10 +27,9 @@ run_simulation(
   `peak test sensitivity` = 0.95,
   `days of peak test sensitivity` = days(3),
   `test sensitivity on last day of symptoms` = 0.5,
- 
-    `daily decrease in sensitivity from peak until recovery` = (`test sensitivity on last day of symptoms`
-    - `peak test sensitivity`) * (days(1)/(last_active_infection_day - (days(4) +
-    `days of peak test sensitivity`))),
+  `daily decrease in sensitivity from peak until recovery` =
+    (`test sensitivity on last day of symptoms` - `peak test sensitivity`) *
+    (days(1)/(last_active_infection_day - (days(4) + `days of peak test sensitivity`))),
   `decrease in sensitivity per day after recovery` = 0.1,
   attestation_sensitivity_symptomatic = 0.9,
   attestation_sensitivity_asymptomatic = max(0.1, 1 - attestation_specificity),
@@ -53,14 +50,14 @@ run_simulation(
   increase_in_accuracy_after_education = 0.1,
   decrease_in_exogenous_risk_after_education = 0.1,
   adult_exogenous_infection_risk_per_day_without_education = 4e-04,
- 
-    adult_exogenous_infection_risk_per_day_with_education = adult_exogenous_infection_risk_per_day_without_education
-    * (1 - decrease_in_exogenous_risk_after_education),
- 
-    student_exogenous_infection_risk_per_day_without_education = adult_exogenous_infection_risk_per_day_without_education,
- 
-    student_exogenous_infection_risk_per_day_with_education = student_exogenous_infection_risk_per_day_without_education
-    * (1 - decrease_in_exogenous_risk_after_education),
+  adult_exogenous_infection_risk_per_day_with_education =
+    adult_exogenous_infection_risk_per_day_without_education * (1 -
+    decrease_in_exogenous_risk_after_education),
+  student_exogenous_infection_risk_per_day_without_education =
+    adult_exogenous_infection_risk_per_day_without_education,
+  student_exogenous_infection_risk_per_day_with_education =
+    student_exogenous_infection_risk_per_day_without_education * (1 -
+    decrease_in_exogenous_risk_after_education),
   risk_per_infected_close_contact = 0.001,
   risk_per_infected_classmate = 5e-04,
   testing_fraction = 0.25,

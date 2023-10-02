@@ -19,7 +19,7 @@ knitr::opts_chunk$set(
 <!-- badges: end -->
 
 The goal of school.epi.abm is to implement an agent-based model of COVID infection and mitigation dynamics in K-6 schools, as described in 
-https://www.medrxiv.org/content/10.1101/2021.02.27.21252535v1.
+<https://doi.org/10.3389/fpubh.2023.856940>.
 
 ## Installation
 
@@ -30,15 +30,25 @@ You can install the development version of school.epi.abm like so:
 devtools::install_github("UCLA-PHP/school.epi.abm")
 ```
 
+## Loading the package
+
+After instalation, you can load the package with the `library()` function:
+```{r}
+library(school.epi.abm)
+```
+
+
 ## Examples
 
-The graphical user interface for the model can be run using the following command:
+The graphical user interface (GUI) for the model can be run using the following command:
 
 ```{r example, eval=FALSE}
 
 shiny::runApp()
 
 ```
+
+The GUI is also deployed at <https://agent-based-models.shinyapps.io/RegionalCOVIDSchoolSimulation/>.
 
 The model can also be run directly from the R command line using the following commands:
 
@@ -54,7 +64,7 @@ simulation_outputs = run_simulation(
 
 We can summarize and visualize the results as follows: 
 
-```{r, eval = TRUE}
+```{r, eval = FALSE}
 
 average_class_data_by_day = summarize_records(simulation_outputs$class_records)
 
@@ -67,9 +77,8 @@ print(plot1a)
 ```
 
 ```{r, eval = FALSE}
-
 analyze_results(simulation_outputs)
 
 ```
 
-The subfolder `inst/extdata` contains the analysis script `ABM results loop.R`, which can be used to loop over a table of input conditions (specified in that script as the tibble `conditions_to_cross`) and reproduce the tables in the corresponding article (https://www.medrxiv.org/content/10.1101/2021.02.27.21252535v1).
+The subfolder `inst/extdata` contains the analysis script `ABM results loop.R`, which can be used to loop over a table of input conditions (specified in that script as the tibble `conditions_to_cross`) and reproduce the tables in the corresponding article (<https://doi.org/10.3389/fpubh.2023.856940>).

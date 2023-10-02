@@ -8,6 +8,13 @@
 \description{
 This package implements an agent-based model of infectious disease epidemic and mitigation dynamics in K6 schools, as described in https://www.medrxiv.org/content/10.1101/2021.02.27.21252535v1.
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://ucla-php.github.io/school.epi.abm/}
+}
+
+}
 \author{
 \strong{Maintainer}: Douglas Morrison \email{dmorrison01@ucla.edu}
 
