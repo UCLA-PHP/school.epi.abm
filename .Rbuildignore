@@ -8,3 +8,7 @@ $run_dev.*
 ^app\.R$
 ^rsconnect$
 ^README\.Rmd$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
+^\.github$

@@ -11,7 +11,7 @@ editor_options:
 ```{r setup, include=FALSE}
 rm(list = ls())
 knitr::opts_chunk$set(echo = FALSE)
-knitr::opts_chunk$set(include = FALSE)
+knitr::opts_chunk$set(include = TRUE)
 library("dplyr")
 library('readxl')
 library(plotly)
@@ -23,6 +23,8 @@ library(readr)
 library('scales')
 library(conflicted)
 conflicts_prefer(plotly::layout)
+conflicts_prefer(dplyr::filter)
+conflicts_prefer(dplyr::lag)
 library("sf")
 library("stringr")
 
@@ -90,7 +92,7 @@ data4 = data4a %>%
 
 ```
 
-```{r}
+```{r, include = FALSE}
 
 data_path3 = path(
   data_folder_path,
@@ -113,8 +115,8 @@ data3 = read_csv(data_path3, col_types = cols()) %>%
 
 ```
 
-
-```{r}
+## Cumulative confirmed cases
+```{r, include = TRUE}
 
 # last_date_graphed = as.Date("2020-12-11")
 last_date_graphed = as.Date("2021-12-04")
@@ -151,11 +153,15 @@ cumulative_cases = plot_ly(
     xaxis = list(title = "Date"),
     yaxis = list(
       title = "Confirmed COVID-19 cases (cumulative) per 100 residents"
-    )) %>%
-  print()
+    ))
+
+
+cumulative_cases
 
 
 ```
+
+## Incident cases
 
 ```{r}
 
@@ -182,12 +188,13 @@ incident_cases = plot_ly(
          xaxis = list(title = "Date"),
          yaxis = list(
            title = "New COVID-19 diagnoses per 100 residents"
-         )) %>%
-  print()
+         )) 
 
+incident_cases
 
 ```
 
+## Prevalent cases
 
 ```{r}
 
@@ -213,9 +220,9 @@ prevalent_cases = plot_ly(
          xaxis = list(title = "Date"),
          yaxis = list(
            title = "Cases detected in the preceding 14 days, per 100 residents"
-         )) %>%
-  print()
+         ))
 
+prevalent_cases
 
 ```
 
