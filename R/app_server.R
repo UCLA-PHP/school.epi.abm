@@ -30,6 +30,7 @@ app_server <- function( input, output, session ) {
       shiny::br(),
       shiny::p(message3),
       shiny::a(url, href = url),
+      shiny::br(),
       shiny::p("See the source code here:"),
       shiny::a(url2, href = url2)))
   
