@@ -16,7 +16,7 @@ app_server <- function( input, output, session ) {
          
   url2 =  "https://github.com/d-morrison/school.epi.abm"
   
-  # url2 = a("dmorrison01@ucla.edu", href = "dmorrison01@ucla.edu")
+  # url2 = a("demorrison@ucdavis.edu", href = "demorrison@ucdavis.edu")
   message1 = "This model was created by Doug Morrison, Roch Nianogo, Vladimir Manuel, Onyebuchi A. Arah, Nathaniel Anderson, Tony Kuo, and Moira Inkelas at UCLA."
   message2 = "Questions about the model can be sent to demorrison at ucdavis.edu."
   message3 = "Download our article:"

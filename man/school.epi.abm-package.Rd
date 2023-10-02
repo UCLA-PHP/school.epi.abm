@@ -16,7 +16,7 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Douglas Morrison \email{dmorrison01@ucla.edu}
+\strong{Maintainer}: Douglas Ezra Morrison \email{demorrison@ucdavis.edu}
 
 }
 \keyword{internal}

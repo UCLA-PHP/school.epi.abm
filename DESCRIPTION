@@ -2,14 +2,15 @@ Package: school.epi.abm
 Title: A model of infectious disease epidemic and mitigation dynamics in K-6 schools
 Version: 0.0.0.9000
 Authors@R: 
-    person(given = "Douglas",
+    person(given = "Douglas Ezra",
            family = "Morrison",
            role = c("aut", "cre"),
-           email = "dmorrison01@ucla.edu")
+           email = "demorrison@ucdavis.edu")
 Description: This package implements an agent-based model of infectious disease epidemic and mitigation dynamics in K6 schools, as described in https://www.medrxiv.org/content/10.1101/2021.02.27.21252535v1.
 License: MIT + file LICENSE
 Imports: 
     config,
+    conflicted,
     dplyr,
     fs,
     ggplot2,
