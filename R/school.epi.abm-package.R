@@ -12,6 +12,8 @@
 #' @importFrom useful build.formula
 #' @importFrom shiny renderUI mainPanel h1 p br a observeEvent eventReactive withProgress
 #' @importFrom shinydashboard updateTabItems
+#' @importFrom stats addmargins quantile sd t.test
+#' @importFrom base by class source with
 
 "_PACKAGE"
 
