@@ -12,3 +12,6 @@ $run_dev.*
 ^docs$
 ^pkgdown$
 ^\.github$
+^inst/missc$
+^inst/misc$
+^misc$
