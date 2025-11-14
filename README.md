@@ -4,6 +4,8 @@
 # school.epi.abm
 
 <!-- badges: start -->
+
+[![R-CMD-check](https://github.com/UCLA-PHP/school.epi.abm/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/UCLA-PHP/school.epi.abm/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 The goal of school.epi.abm is to implement an agent-based model of COVID
@@ -67,7 +69,6 @@ print(plot1a)
 ```
 
 ``` r
-
 analyze_results(simulation_outputs)
 ```
 
