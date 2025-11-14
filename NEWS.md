@@ -3,7 +3,7 @@
 ## Changes
 
 * Removed render-rmarkdown.yaml workflow
-* Fixed typo in README.Rmd (instalation -> installation)
+* Fixed typo in README.Rmd (installation)
 * Added inst/WORDLIST for spellcheck configuration
 
 # school.epi.abm 0.0.0.9000
