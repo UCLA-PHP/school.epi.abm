@@ -23,7 +23,7 @@ devtools::install_github("UCLA-PHP/school.epi.abm")
 
 ## Loading the package
 
-After instalation, you can load the package with the `library()`
+After installation, you can load the package with the `library()`
 function:
 
 ``` r
