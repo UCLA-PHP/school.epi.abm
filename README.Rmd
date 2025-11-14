@@ -16,6 +16,7 @@ knitr::opts_chunk$set(
 # school.epi.abm
 
 <!-- badges: start -->
+[![R-CMD-check](https://github.com/UCLA-PHP/school.epi.abm/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/UCLA-PHP/school.epi.abm/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 The goal of school.epi.abm is to implement an agent-based model of COVID infection and mitigation dynamics in K-6 schools, as described in 
