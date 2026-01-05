@@ -790,9 +790,9 @@ run_simulation = function(
         
         positive_test_results_summary = 
           test_results %>% 
-          filter(result_date <= cur_date,
-                 test_result == TRUE) %>%
-          group_by(ID) %>%
+          filter(.data$result_date <= cur_date,
+                 .data$test_result == TRUE) %>%
+          group_by("ID") %>%
           summarize(
             .groups = 'drop',
             
@@ -801,44 +801,44 @@ run_simulation = function(
             # this way saves computing time:
             # 
             earliest_positive_test_collection_date = 
-              collection_date[1], 
+              .data$collection_date[1], 
             
             latest_positive_test_collection_date = 
-              collection_date[n()])
+              .data$collection_date[n()])
         
         household_adults %<>%
           select(-any_of("earliest_positive_test_collection_date")) %>%
           left_join(
             by = "ID",
             positive_test_results_summary %>% 
-              select(ID, earliest_positive_test_collection_date))
+              select("ID", "earliest_positive_test_collection_date"))
         
         households %<>%
           select(-any_of(c("most_recent_adult_diagnosis", "n_adult_diagnoses"))) %>%
           left_join(
             by = "household_ID",
             household_adults %>%
-              group_by(household_ID) %>%
+              group_by("household_ID") %>%
               summarize(
                 .groups = "drop",
                 n_adult_diagnoses = 
-                  sum(!is.na(earliest_positive_test_collection_date)),
+                  sum(!is.na(.data$earliest_positive_test_collection_date)),
                 most_recent_adult_diagnosis = 
                   suppressWarnings( 
                     # warning occurs if neither parent has tested positive yet
-                    max(na.rm = TRUE, earliest_positive_test_collection_date)))
+                    max(na.rm = TRUE, .data$earliest_positive_test_collection_date)))
           ) %>%
           mutate(
             most_recent_adult_diagnosis = if_else(
-              n_adult_diagnoses > 0,
-              most_recent_adult_diagnosis,
+              .data$n_adult_diagnoses > 0,
+              .data$most_recent_adult_diagnosis,
               as.Date(NA)
             ),
             quarantine_end_date = 
               pmax(
                 na.rm = TRUE,
-                quarantine_end_date,
-                most_recent_adult_diagnosis + quarantine_length_after_adult_positive_test
+                .data$quarantine_end_date,
+                .data$most_recent_adult_diagnosis + quarantine_length_after_adult_positive_test
               )
           )
         
@@ -847,7 +847,7 @@ run_simulation = function(
           left_join(
             by = "ID",
             positive_test_results_summary %>% 
-              select(ID, earliest_positive_test_collection_date))
+              select("ID", "earliest_positive_test_collection_date"))
         # we deal with students' test results and quarantine end date later, when we calculate attendance status
         
         if(verbose) message(
@@ -876,14 +876,14 @@ run_simulation = function(
         students_in_class_during_latest_window = 
           student_records %>%
           filter(
-            cur_date - date <= cluster_time_window,
-            in_school_today) %>%
-          select(ID, class) %>%
+            cur_date - .data$date <= cluster_time_window,
+            .data$in_school_today) %>%
+          select("ID", "class") %>%
           unique()
         
         diagnoses_in_latest_window = 
           students %>%
-          filter(cur_date - earliest_positive_test_collection_date <= cluster_time_window)
+          filter(cur_date - .data$earliest_positive_test_collection_date <= cluster_time_window)
         
         n_students_in_class_and_diagnosed_during_latest_window = 
           inner_join(
@@ -897,19 +897,19 @@ run_simulation = function(
         
         latest_date_with_students = 
           class_records %>%
-          group_by(class) %>% 
+          group_by("class") %>% 
           summarise(
             .groups = 'drop',
             n_dates_with_students = 
-              length(date[n_students_in_attendance_today > 0]),
+              length(.data$date[.data$n_students_in_attendance_today > 0]),
             latest_date_with_students = 
-              suppressWarnings(max(date[n_students_in_attendance_today > 0]))) %>%
+              suppressWarnings(max(.data$date[.data$n_students_in_attendance_today > 0]))) %>%
           mutate(
             latest_date_with_students = 
               if_else(
-                n_dates_with_students == 0,
+                .data$n_dates_with_students == 0,
                 as.Date(NA), # something about the NA format gets corrupted otherwise, as of 2020-12-04
-                latest_date_with_students
+                .data$latest_date_with_students
               ),
             n_dates_with_students = NULL
           )
@@ -928,24 +928,24 @@ run_simulation = function(
           mutate(
             "n_students_in_class_and_diagnosed_during_latest_window" = 
               if_else(
-                is.na(n_students_in_class_and_diagnosed_during_latest_window),
+                is.na(.data$n_students_in_class_and_diagnosed_during_latest_window),
                 as.integer(0),
-                n_students_in_class_and_diagnosed_during_latest_window),
+                .data$n_students_in_class_and_diagnosed_during_latest_window),
             
             "recent_outbreak_detected_in_class" = 
-              n_students_in_class_and_diagnosed_during_latest_window >= 
+              .data$n_students_in_class_and_diagnosed_during_latest_window >= 
               n_students_recently_in_class_and_diagnosed_for_outbreak,
             
             "outbreak_newly_detected_in_class" = 
-              recent_outbreak_detected_in_class &
-              (is.na(quarantine_end_date) | 
-                 quarantine_end_date <= cur_date),
+              .data$recent_outbreak_detected_in_class &
+              (is.na(.data$quarantine_end_date) | 
+                 .data$quarantine_end_date <= cur_date),
             
             "quarantine_end_date" = 
               if_else(
-                outbreak_newly_detected_in_class,
-                latest_date_with_students + quarantine_length_after_outbreak,
-                quarantine_end_date),
+                .data$outbreak_newly_detected_in_class,
+                .data$latest_date_with_students + quarantine_length_after_outbreak,
+                .data$quarantine_end_date),
             
             "class_quarantined_today" =
               !is.na(quarantine_end_date) &
