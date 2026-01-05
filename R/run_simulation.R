@@ -498,13 +498,13 @@ run_simulation = function(
         summarise(
           .groups = "drop", 
           "student_number_in_class" = 1:n_students_on_roster,
-          "close_contact_group" = ((student_number_in_class - 1) %/% n_close_contacts_in_class) + 1, 
+          "close_contact_group" = ((.data$student_number_in_class - 1) %/% n_close_contacts_in_class) + 1, 
           # if the number of students in class isn't divisible by `n_close_contacts_in_class`, 
           # there will be some students with fewer close contacts.
-          "ID" = paste(class, student_number_in_class, sep = ":")) %>% 
+          "ID" = paste(.data$class, .data$student_number_in_class, sep = ":")) %>% 
         # rowwise() %>% # slows down the processing substantially, 2020-09-03
         mutate(
-          "household_ID" = ID, # might be changed in the future
+          "household_ID" = .data$ID, # might be changed in the future
           "student_number_in_class" = NULL)
       
       students = 
@@ -551,14 +551,14 @@ run_simulation = function(
         
         test_results = 
           students %>% 
-          select(ID, infection_date) %>%
+          select("ID", "infection_date") %>%
           mutate(
             collection_date = baseline_collection_date,
             result_date = baseline_return_date,
             test_type = "baseline",
             test_result = rbernoulli(
               n = n(),
-              p = pr_test_positive(baseline_collection_date - infection_date)))
+              p = pr_test_positive(baseline_collection_date - .data$infection_date)))
         
       }
       
@@ -570,10 +570,10 @@ run_simulation = function(
       households = 
         students %>%
         select(
-          school,
-          class,
-          household_ID,
-          quarantine_end_date) %>%
+          "school",
+          "class",
+          "household_ID",
+          "quarantine_end_date") %>%
         mutate(
           "n_adults_in_household" = n_adults_per_household,
           "received_outreach_after_positive_attestation" = FALSE)
@@ -585,10 +585,10 @@ run_simulation = function(
       
       household_adults = 
         households %>% 
-        group_by(household_ID) %>%
+        group_by("household_ID") %>%
         summarise(
           .groups = "drop",
-          ID = paste(household_ID, ":A", 1:n_adults_in_household, sep = ""))
+          ID = paste(.data$household_ID, ":A", 1:.data$n_adults_in_household, sep = ""))
       
       household_adults =
         initialize_agents(
@@ -720,22 +720,22 @@ run_simulation = function(
           mutate(
             
             days_since_infected = 
-              cur_date - infection_date, # NA if not previously infected
+              cur_date - .data$infection_date, # NA if not previously infected
             
             active_infection = 
-              !is.na(days_since_infected) & 
-              days_since_infected <= last_active_infection_day,
+              !is.na(.data$days_since_infected) & 
+              .data$days_since_infected <= last_active_infection_day,
             
             symptomatic_today =
-              symptomatic_if_infected &
-              infected &
-              days_since_infected >= first_symptomatic_day &
-              days_since_infected <= last_symptomatic_day,
+              .data$symptomatic_if_infected &
+              .data$infected &
+              .data$days_since_infected >= first_symptomatic_day &
+              .data$days_since_infected <= last_symptomatic_day,
             
             infectious_today = 
-              infected &
-              days_since_infected >= first_infectious_day &
-              days_since_infected <= last_infectious_day
+              .data$infected &
+              .data$days_since_infected >= first_infectious_day &
+              .data$days_since_infected <= last_infectious_day
             
             # recovered = infected & days_since_infected > 14,
           )
@@ -751,22 +751,22 @@ run_simulation = function(
         household_adults %<>% 
           mutate(
             
-            days_since_infected = cur_date - infection_date, # NA if not previously infected
+            days_since_infected = cur_date - .data$infection_date, # NA if not previously infected
             
             active_infection = 
-              !is.na(days_since_infected) & 
-              days_since_infected <= last_active_infection_day,
+              !is.na(.data$days_since_infected) & 
+              .data$days_since_infected <= last_active_infection_day,
             
             symptomatic_today =
-              symptomatic_if_infected &
-              infected &
-              days_since_infected >= first_symptomatic_day &
-              days_since_infected <= last_symptomatic_day,
+              .data$symptomatic_if_infected &
+              .data$infected &
+              .data$days_since_infected >= first_symptomatic_day &
+              .data$days_since_infected <= last_symptomatic_day,
             
             infectious_today = 
-              infected &
-              days_since_infected >= first_infectious_day &
-              days_since_infected <= last_infectious_day
+              .data$infected &
+              .data$days_since_infected >= first_infectious_day &
+              .data$days_since_infected <= last_infectious_day
             
             # recovered = infected & days_since_infected > 14,
           )
