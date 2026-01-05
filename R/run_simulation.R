@@ -948,16 +948,16 @@ run_simulation = function(
                 .data$quarantine_end_date),
             
             "class_quarantined_today" =
-              !is.na(quarantine_end_date) &
-              quarantine_end_date > cur_date,
+              !is.na(.data$quarantine_end_date) &
+              .data$quarantine_end_date > cur_date,
             
             "last_detected_cluster_date" = 
               if_else(
-                outbreak_newly_detected_in_class,
+                .data$outbreak_newly_detected_in_class,
                 cur_date,
-                last_detected_cluster_date),
+                .data$last_detected_cluster_date),
             
-            "n_outbreaks" = n_outbreaks + outbreak_newly_detected_in_class)
+            "n_outbreaks" = .data$n_outbreaks + .data$outbreak_newly_detected_in_class)
         
       }
       
@@ -968,12 +968,12 @@ run_simulation = function(
           mutate(
             attestation_positive_probability = 
               attestation_positive_probability(
-                days_since_infected,
-                symptomatic_if_infected,
-                has_covid_safety_education),
+                .data$days_since_infected,
+                .data$symptomatic_if_infected,
+                .data$has_covid_safety_education),
             attestation_positive = rbernoulli(
               n = n(),
-              p = attestation_positive_probability))
+              p = .data$attestation_positive_probability))
         
         if(any(is.na(household_adults$attestation_positive_probability)))
         {
@@ -984,12 +984,12 @@ run_simulation = function(
           mutate(
             attestation_positive_probability = 
               attestation_positive_probability(
-                days_since_infected,
-                symptomatic_if_infected,
-                has_covid_safety_education),
+                .data$days_since_infected,
+                .data$symptomatic_if_infected,
+                .data$has_covid_safety_education),
             attestation_positive = rbernoulli(
               n = n(),
-              p = attestation_positive_probability))
+              p = .data$attestation_positive_probability))
         
         if(any(is.na(students$attestation_positive_probability)))
         {
@@ -1018,37 +1018,37 @@ run_simulation = function(
             by = "household_ID",
             
             household_adults %>%
-              group_by(household_ID) %>%
+              group_by("household_ID") %>%
               summarise(
                 .groups = 'drop',
-                n_infectious_adults_in_household_today = sum(infectious_today),
+                n_infectious_adults_in_household_today = sum(.data$infectious_today),
                 # n_symptomatic_adults_in_household_today = sum(symptomatic_today),
                 
-                n_adult_positive_attestations = sum(attestation_positive))) %>%
+                n_adult_positive_attestations = sum(.data$attestation_positive))) %>%
           
           left_join(
             by = "household_ID",
             
             students %>% 
-              select(household_ID, attestation_positive) %>% 
-              rename(student_attestation_positive = attestation_positive)) %>%
+              select("household_ID", "attestation_positive") %>% 
+              rename(student_attestation_positive = "attestation_positive")) %>%
           
           mutate(
             
             household_attestation_positive = 
-              student_attestation_positive | n_adult_positive_attestations > 0,
+              .data$student_attestation_positive | .data$n_adult_positive_attestations > 0,
             
             # could simplify this to look more like the handling of test results, 
             # specifically, calculate "date of most recent positive attestation"
             # and use pmax on that.
             quarantine_end_date = 
               if_else(
-                household_attestation_positive,
+                .data$household_attestation_positive,
                 pmax(
                   na.rm = TRUE,
-                  quarantine_end_date,
+                  .data$quarantine_end_date,
                   cur_date + quarantine_length_after_positive_attestation),
-                quarantine_end_date
+                .data$quarantine_end_date
               )
             
           )
@@ -1058,27 +1058,27 @@ run_simulation = function(
           semi_join(
             by = "household_ID",
             students %>% 
-              filter(is.na(earliest_positive_test_collection_date))) %>%
-          filter(household_attestation_positive) %>%
+              filter(is.na(.data$earliest_positive_test_collection_date))) %>%
+          filter(.data$household_attestation_positive) %>%
           mutate(
             date_of_covid_education_outreach = 
               cur_date + wait_time_for_household_education_after_positive_attestation) %>%
           select(
-            household_ID,
-            date_of_covid_education_outreach,
-            n_adult_positive_attestations,
-            student_attestation_positive
+            "household_ID",
+            "date_of_covid_education_outreach",
+            "n_adult_positive_attestations",
+            "student_attestation_positive"
           )
         
         # merge duplicate pending outreaches to the same households:
         scheduled_household_outreach_efforts %<>%
           bind_rows(new_households_to_contact) %>%
-          group_by(household_ID) %>%
+          group_by("household_ID") %>%
           summarise(
             .groups = "drop",
-            date_of_covid_education_outreach = min(date_of_covid_education_outreach),
-            n_adult_positive_attestations = max(n_adult_positive_attestations),
-            student_attestation_positive = any(student_attestation_positive))
+            date_of_covid_education_outreach = min(.data$date_of_covid_education_outreach),
+            n_adult_positive_attestations = max(.data$n_adult_positive_attestations),
+            student_attestation_positive = any(.data$student_attestation_positive))
         
         if(verbose) message(sum(households$household_attestation_positive), " households attested positive today.")
         
@@ -1093,8 +1093,8 @@ run_simulation = function(
           left_join(
             by = "household_ID",
             households %>%
-              select(household_ID, quarantine_end_date) %>%
-              rename(household_quarantine_end_date = quarantine_end_date)
+              select("household_ID", "quarantine_end_date") %>%
+              rename(household_quarantine_end_date = "quarantine_end_date")
           ) %>%
           
           mutate(
