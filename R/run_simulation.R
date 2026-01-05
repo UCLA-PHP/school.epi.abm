@@ -1101,20 +1101,20 @@ run_simulation = function(
             
             quarantine_end_date = if_else(
               condition = 
-                is.na(earliest_positive_test_collection_date),
+                is.na(.data$earliest_positive_test_collection_date),
               true = 
                 pmax(
                   na.rm = TRUE,
                   # class quarantine end date is accounted for below
-                  household_quarantine_end_date,
-                  quarantine_end_date), # they might already be quarantined for longer due to detected cluster in class
+                  .data$household_quarantine_end_date,
+                  .data$quarantine_end_date), # they might already be quarantined for longer due to detected cluster in class
               false = 
-                earliest_positive_test_collection_date + 
+                .data$earliest_positive_test_collection_date + 
                 quarantine_length_after_student_positive_test),
             
             student_quarantined_today = 
-              !is.na(quarantine_end_date) & 
-              (cur_date <= quarantine_end_date)
+              !is.na(.data$quarantine_end_date) & 
+              (cur_date <= .data$quarantine_end_date)
             
           ) %>%
           
@@ -1123,15 +1123,15 @@ run_simulation = function(
           
           left_join(
             by = "class",
-            classes %>% select(class, class_quarantined_today)
+            classes %>% select("class", "class_quarantined_today")
           ) %>%
           
           mutate(
             in_school_today = 
               cur_date >= in_person_school_start_date &
               calendar[i, "school_day", drop = TRUE] &
-              !class_quarantined_today &
-              !student_quarantined_today)
+              !.data$class_quarantined_today &
+              !.data$student_quarantined_today)
         
         if(verbose)
         {
@@ -1149,30 +1149,30 @@ run_simulation = function(
         # can't filter by in-school, bc I need to count enrolled students
         new_tests = 
           students %>% 
-          select(school, in_school_today, ID, infection_date) %>%
-          group_by(school) %>%
+          select("school", "in_school_today", "ID", "infection_date") %>%
+          group_by("school") %>%
           mutate(
             tested_today = 
-              ID %in% sample(
+              .data$ID %in% sample(
                 replace = FALSE,
-                x = ID[in_school_today],
+                x = .data$ID[.data$in_school_today],
                 size = min(
-                  sum(in_school_today), 
+                  sum(.data$in_school_today), 
                   floor(n() * testing_fraction)))) %>% 
-          filter(tested_today) %>%
+          filter(.data$tested_today) %>%
           ungroup() %>%
           # rowwise() %>% # might save some time by avoiding unnecessary RNG
           mutate(
             collection_date = cur_date,
             result_date = cur_date + wait_time_for_surveillance_test_results,
             test_type = "surveillance",
-            pr_positive = pr_test_positive(cur_date - infection_date),
+            pr_positive = pr_test_positive(cur_date - .data$infection_date),
             test_result = 
               if_else(
-                condition = tested_today,
+                condition = .data$tested_today,
                 true = rbernoulli(
                   n = n(),
-                  p = pr_positive),
+                  p = .data$pr_positive),
                 false = NA))
         
         test_results %<>% 
