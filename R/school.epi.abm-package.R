@@ -1,5 +1,6 @@
 #' @keywords internal
 #' @import dplyr
+#' @importFrom rlang .data
 #' @importFrom shiny tags
 #' @importFrom plotly plotlyOutput renderPlotly
 #' @importFrom shiny tagList tags HTML h2 fluidRow uiOutput

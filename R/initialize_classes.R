@@ -5,10 +5,10 @@ initialize_classes = function(
   
   classes = 
     schools %>%
-    group_by(school) %>%
+    group_by("school") %>%
     summarise(
       .groups = "drop", 
-      class = paste(school, 1:n_classes_in_school, sep = ":")) %>% 
+      class = paste(.data$school, 1:.data$n_classes_in_school, sep = ":")) %>% 
     mutate(
       n_students_on_roster = n_students_per_class,
       n_outbreaks = 0,
