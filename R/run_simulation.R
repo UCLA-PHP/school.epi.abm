@@ -585,9 +585,8 @@ run_simulation = function(
       
       household_adults = 
         households %>% 
-        group_by("household_ID") %>%
         summarise(
-          .groups = "drop",
+          .by = "household_ID",
           ID = paste(.data$household_ID, ":A", 1:.data$n_adults_in_household, sep = ""))
       
       household_adults =
@@ -792,9 +791,8 @@ run_simulation = function(
           test_results %>% 
           filter(.data$result_date <= cur_date,
                  .data$test_result == TRUE) %>%
-          group_by("ID") %>%
           summarize(
-            .groups = 'drop',
+            .by = "ID",
             
             # could use min(collection_date) and max(collection_date),  
             # but since I know the test results are arranged by date, 
@@ -818,9 +816,8 @@ run_simulation = function(
           left_join(
             by = "household_ID",
             household_adults %>%
-              group_by("household_ID") %>%
               summarize(
-                .groups = "drop",
+                .by = "household_ID",
                 n_adult_diagnoses = 
                   sum(!is.na(.data$earliest_positive_test_collection_date)),
                 most_recent_adult_diagnosis = 
@@ -897,9 +894,8 @@ run_simulation = function(
         
         latest_date_with_students = 
           class_records %>%
-          group_by("class") %>% 
           summarise(
-            .groups = 'drop',
+            .by = "class",
             n_dates_with_students = 
               length(.data$date[.data$n_students_in_attendance_today > 0]),
             latest_date_with_students = 
@@ -1018,9 +1014,8 @@ run_simulation = function(
             by = "household_ID",
             
             household_adults %>%
-              group_by("household_ID") %>%
               summarise(
-                .groups = 'drop',
+                .by = "household_ID",
                 n_infectious_adults_in_household_today = sum(.data$infectious_today),
                 # n_symptomatic_adults_in_household_today = sum(symptomatic_today),
                 
@@ -1073,9 +1068,8 @@ run_simulation = function(
         # merge duplicate pending outreaches to the same households:
         scheduled_household_outreach_efforts %<>%
           bind_rows(new_households_to_contact) %>%
-          group_by("household_ID") %>%
           summarise(
-            .groups = "drop",
+            .by = "household_ID",
             date_of_covid_education_outreach = min(.data$date_of_covid_education_outreach),
             n_adult_positive_attestations = max(.data$n_adult_positive_attestations),
             student_attestation_positive = any(.data$student_attestation_positive))
@@ -1150,8 +1144,8 @@ run_simulation = function(
         new_tests = 
           students %>% 
           select("school", "in_school_today", "ID", "infection_date") %>%
-          group_by("school") %>%
           mutate(
+            .by = "school",
             tested_today = 
               .data$ID %in% sample(
                 replace = FALSE,
@@ -1160,7 +1154,6 @@ run_simulation = function(
                   sum(.data$in_school_today), 
                   floor(n() * testing_fraction)))) %>% 
           filter(.data$tested_today) %>%
-          ungroup() %>%
           # rowwise() %>% # might save some time by avoiding unnecessary RNG
           mutate(
             collection_date = cur_date,
