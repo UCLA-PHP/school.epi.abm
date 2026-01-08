@@ -932,13 +932,3 @@ local({
 
 })
 
-if (interactive()) {
-  suppressMessages(require(devtools)) # loads usethis
-  suppressMessages(require(rsconnect)) # loads rsconnect
-  suppressMessages(require(dplyr))
-  suppressMessages(require(lubridate))
-  suppressMessages(require(conflicted))
-  credentials::set_github_pat()
-  conflicted::conflict_prefer("filter", "dplyr")
-
-}
