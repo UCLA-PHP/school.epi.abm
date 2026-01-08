@@ -15,3 +15,5 @@ $run_dev.*
 ^inst/missc$
 ^inst/misc$
 ^misc$
+^renv$
+^renv\.lock$
