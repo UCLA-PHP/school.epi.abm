@@ -12,3 +12,5 @@ $run_dev.*
 ^docs$
 ^pkgdown$
 ^\.github$
+^renv$
+^renv\.lock$

@@ -1,3 +1,5 @@
+source("renv/activate.R")
+
 message("starting package .Rprofile")
 #myPaths = unique(c("/Users/dmorrison/Documents/R/win-library/4.0", "/Users/dmorrison/R/win-library/4.0",
 #.libPaths()))
