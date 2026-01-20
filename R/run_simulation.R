@@ -498,13 +498,13 @@ run_simulation = function(
         summarise(
           .groups = "drop", 
           "student_number_in_class" = 1:n_students_on_roster,
-          "close_contact_group" = ((student_number_in_class - 1) %/% n_close_contacts_in_class) + 1, 
+          "close_contact_group" = ((.data$student_number_in_class - 1) %/% n_close_contacts_in_class) + 1, 
           # if the number of students in class isn't divisible by `n_close_contacts_in_class`, 
           # there will be some students with fewer close contacts.
-          "ID" = paste(class, student_number_in_class, sep = ":")) %>% 
+          "ID" = paste(.data$class, .data$student_number_in_class, sep = ":")) %>% 
         # rowwise() %>% # slows down the processing substantially, 2020-09-03
         mutate(
-          "household_ID" = ID, # might be changed in the future
+          "household_ID" = .data$ID, # might be changed in the future
           "student_number_in_class" = NULL)
       
       students = 
@@ -551,14 +551,14 @@ run_simulation = function(
         
         test_results = 
           students %>% 
-          select(ID, infection_date) %>%
+          select("ID", "infection_date") %>%
           mutate(
             collection_date = baseline_collection_date,
             result_date = baseline_return_date,
             test_type = "baseline",
             test_result = rbernoulli(
               n = n(),
-              p = pr_test_positive(baseline_collection_date - infection_date)))
+              p = pr_test_positive(baseline_collection_date - .data$infection_date)))
         
       }
       
@@ -570,10 +570,10 @@ run_simulation = function(
       households = 
         students %>%
         select(
-          school,
-          class,
-          household_ID,
-          quarantine_end_date) %>%
+          "school",
+          "class",
+          "household_ID",
+          "quarantine_end_date") %>%
         mutate(
           "n_adults_in_household" = n_adults_per_household,
           "received_outreach_after_positive_attestation" = FALSE)
@@ -585,10 +585,9 @@ run_simulation = function(
       
       household_adults = 
         households %>% 
-        group_by(household_ID) %>%
         summarise(
-          .groups = "drop",
-          ID = paste(household_ID, ":A", 1:n_adults_in_household, sep = ""))
+          .by = "household_ID",
+          ID = paste(.data$household_ID, ":A", 1:.data$n_adults_in_household, sep = ""))
       
       household_adults =
         initialize_agents(
@@ -720,22 +719,22 @@ run_simulation = function(
           mutate(
             
             days_since_infected = 
-              cur_date - infection_date, # NA if not previously infected
+              cur_date - .data$infection_date, # NA if not previously infected
             
             active_infection = 
-              !is.na(days_since_infected) & 
-              days_since_infected <= last_active_infection_day,
+              !is.na(.data$days_since_infected) & 
+              .data$days_since_infected <= last_active_infection_day,
             
             symptomatic_today =
-              symptomatic_if_infected &
-              infected &
-              days_since_infected >= first_symptomatic_day &
-              days_since_infected <= last_symptomatic_day,
+              .data$symptomatic_if_infected &
+              .data$infected &
+              .data$days_since_infected >= first_symptomatic_day &
+              .data$days_since_infected <= last_symptomatic_day,
             
             infectious_today = 
-              infected &
-              days_since_infected >= first_infectious_day &
-              days_since_infected <= last_infectious_day
+              .data$infected &
+              .data$days_since_infected >= first_infectious_day &
+              .data$days_since_infected <= last_infectious_day
             
             # recovered = infected & days_since_infected > 14,
           )
@@ -751,22 +750,22 @@ run_simulation = function(
         household_adults %<>% 
           mutate(
             
-            days_since_infected = cur_date - infection_date, # NA if not previously infected
+            days_since_infected = cur_date - .data$infection_date, # NA if not previously infected
             
             active_infection = 
-              !is.na(days_since_infected) & 
-              days_since_infected <= last_active_infection_day,
+              !is.na(.data$days_since_infected) & 
+              .data$days_since_infected <= last_active_infection_day,
             
             symptomatic_today =
-              symptomatic_if_infected &
-              infected &
-              days_since_infected >= first_symptomatic_day &
-              days_since_infected <= last_symptomatic_day,
+              .data$symptomatic_if_infected &
+              .data$infected &
+              .data$days_since_infected >= first_symptomatic_day &
+              .data$days_since_infected <= last_symptomatic_day,
             
             infectious_today = 
-              infected &
-              days_since_infected >= first_infectious_day &
-              days_since_infected <= last_infectious_day
+              .data$infected &
+              .data$days_since_infected >= first_infectious_day &
+              .data$days_since_infected <= last_infectious_day
             
             # recovered = infected & days_since_infected > 14,
           )
@@ -790,55 +789,53 @@ run_simulation = function(
         
         positive_test_results_summary = 
           test_results %>% 
-          filter(result_date <= cur_date,
-                 test_result == TRUE) %>%
-          group_by(ID) %>%
+          filter(.data$result_date <= cur_date,
+                 .data$test_result == TRUE) %>%
           summarize(
-            .groups = 'drop',
+            .by = "ID",
             
             # could use min(collection_date) and max(collection_date),  
             # but since I know the test results are arranged by date, 
             # this way saves computing time:
             # 
             earliest_positive_test_collection_date = 
-              collection_date[1], 
+              .data$collection_date[1], 
             
             latest_positive_test_collection_date = 
-              collection_date[n()])
+              .data$collection_date[n()])
         
         household_adults %<>%
           select(-any_of("earliest_positive_test_collection_date")) %>%
           left_join(
             by = "ID",
             positive_test_results_summary %>% 
-              select(ID, earliest_positive_test_collection_date))
+              select("ID", "earliest_positive_test_collection_date"))
         
         households %<>%
           select(-any_of(c("most_recent_adult_diagnosis", "n_adult_diagnoses"))) %>%
           left_join(
             by = "household_ID",
             household_adults %>%
-              group_by(household_ID) %>%
               summarize(
-                .groups = "drop",
+                .by = "household_ID",
                 n_adult_diagnoses = 
-                  sum(!is.na(earliest_positive_test_collection_date)),
+                  sum(!is.na(.data$earliest_positive_test_collection_date)),
                 most_recent_adult_diagnosis = 
                   suppressWarnings( 
                     # warning occurs if neither parent has tested positive yet
-                    max(na.rm = TRUE, earliest_positive_test_collection_date)))
+                    max(na.rm = TRUE, .data$earliest_positive_test_collection_date)))
           ) %>%
           mutate(
             most_recent_adult_diagnosis = if_else(
-              n_adult_diagnoses > 0,
-              most_recent_adult_diagnosis,
+              .data$n_adult_diagnoses > 0,
+              .data$most_recent_adult_diagnosis,
               as.Date(NA)
             ),
             quarantine_end_date = 
               pmax(
                 na.rm = TRUE,
-                quarantine_end_date,
-                most_recent_adult_diagnosis + quarantine_length_after_adult_positive_test
+                .data$quarantine_end_date,
+                .data$most_recent_adult_diagnosis + quarantine_length_after_adult_positive_test
               )
           )
         
@@ -847,7 +844,7 @@ run_simulation = function(
           left_join(
             by = "ID",
             positive_test_results_summary %>% 
-              select(ID, earliest_positive_test_collection_date))
+              select("ID", "earliest_positive_test_collection_date"))
         # we deal with students' test results and quarantine end date later, when we calculate attendance status
         
         if(verbose) message(
@@ -876,14 +873,14 @@ run_simulation = function(
         students_in_class_during_latest_window = 
           student_records %>%
           filter(
-            cur_date - date <= cluster_time_window,
-            in_school_today) %>%
-          select(ID, class) %>%
+            cur_date - .data$date <= cluster_time_window,
+            .data$in_school_today) %>%
+          select("ID", "class") %>%
           unique()
         
         diagnoses_in_latest_window = 
           students %>%
-          filter(cur_date - earliest_positive_test_collection_date <= cluster_time_window)
+          filter(cur_date - .data$earliest_positive_test_collection_date <= cluster_time_window)
         
         n_students_in_class_and_diagnosed_during_latest_window = 
           inner_join(
@@ -897,19 +894,18 @@ run_simulation = function(
         
         latest_date_with_students = 
           class_records %>%
-          group_by(class) %>% 
           summarise(
-            .groups = 'drop',
+            .by = "class",
             n_dates_with_students = 
-              length(date[n_students_in_attendance_today > 0]),
+              length(.data$date[.data$n_students_in_attendance_today > 0]),
             latest_date_with_students = 
-              suppressWarnings(max(date[n_students_in_attendance_today > 0]))) %>%
+              suppressWarnings(max(.data$date[.data$n_students_in_attendance_today > 0]))) %>%
           mutate(
             latest_date_with_students = 
               if_else(
-                n_dates_with_students == 0,
+                .data$n_dates_with_students == 0,
                 as.Date(NA), # something about the NA format gets corrupted otherwise, as of 2020-12-04
-                latest_date_with_students
+                .data$latest_date_with_students
               ),
             n_dates_with_students = NULL
           )
@@ -928,36 +924,36 @@ run_simulation = function(
           mutate(
             "n_students_in_class_and_diagnosed_during_latest_window" = 
               if_else(
-                is.na(n_students_in_class_and_diagnosed_during_latest_window),
+                is.na(.data$n_students_in_class_and_diagnosed_during_latest_window),
                 as.integer(0),
-                n_students_in_class_and_diagnosed_during_latest_window),
+                .data$n_students_in_class_and_diagnosed_during_latest_window),
             
             "recent_outbreak_detected_in_class" = 
-              n_students_in_class_and_diagnosed_during_latest_window >= 
+              .data$n_students_in_class_and_diagnosed_during_latest_window >= 
               n_students_recently_in_class_and_diagnosed_for_outbreak,
             
             "outbreak_newly_detected_in_class" = 
-              recent_outbreak_detected_in_class &
-              (is.na(quarantine_end_date) | 
-                 quarantine_end_date <= cur_date),
+              .data$recent_outbreak_detected_in_class &
+              (is.na(.data$quarantine_end_date) | 
+                 .data$quarantine_end_date <= cur_date),
             
             "quarantine_end_date" = 
               if_else(
-                outbreak_newly_detected_in_class,
-                latest_date_with_students + quarantine_length_after_outbreak,
-                quarantine_end_date),
+                .data$outbreak_newly_detected_in_class,
+                .data$latest_date_with_students + quarantine_length_after_outbreak,
+                .data$quarantine_end_date),
             
             "class_quarantined_today" =
-              !is.na(quarantine_end_date) &
-              quarantine_end_date > cur_date,
+              !is.na(.data$quarantine_end_date) &
+              .data$quarantine_end_date > cur_date,
             
             "last_detected_cluster_date" = 
               if_else(
-                outbreak_newly_detected_in_class,
+                .data$outbreak_newly_detected_in_class,
                 cur_date,
-                last_detected_cluster_date),
+                .data$last_detected_cluster_date),
             
-            "n_outbreaks" = n_outbreaks + outbreak_newly_detected_in_class)
+            "n_outbreaks" = .data$n_outbreaks + .data$outbreak_newly_detected_in_class)
         
       }
       
@@ -968,12 +964,12 @@ run_simulation = function(
           mutate(
             attestation_positive_probability = 
               attestation_positive_probability(
-                days_since_infected,
-                symptomatic_if_infected,
-                has_covid_safety_education),
+                .data$days_since_infected,
+                .data$symptomatic_if_infected,
+                .data$has_covid_safety_education),
             attestation_positive = rbernoulli(
               n = n(),
-              p = attestation_positive_probability))
+              p = .data$attestation_positive_probability))
         
         if(any(is.na(household_adults$attestation_positive_probability)))
         {
@@ -984,12 +980,12 @@ run_simulation = function(
           mutate(
             attestation_positive_probability = 
               attestation_positive_probability(
-                days_since_infected,
-                symptomatic_if_infected,
-                has_covid_safety_education),
+                .data$days_since_infected,
+                .data$symptomatic_if_infected,
+                .data$has_covid_safety_education),
             attestation_positive = rbernoulli(
               n = n(),
-              p = attestation_positive_probability))
+              p = .data$attestation_positive_probability))
         
         if(any(is.na(students$attestation_positive_probability)))
         {
@@ -1018,37 +1014,36 @@ run_simulation = function(
             by = "household_ID",
             
             household_adults %>%
-              group_by(household_ID) %>%
               summarise(
-                .groups = 'drop',
-                n_infectious_adults_in_household_today = sum(infectious_today),
+                .by = "household_ID",
+                n_infectious_adults_in_household_today = sum(.data$infectious_today),
                 # n_symptomatic_adults_in_household_today = sum(symptomatic_today),
                 
-                n_adult_positive_attestations = sum(attestation_positive))) %>%
+                n_adult_positive_attestations = sum(.data$attestation_positive))) %>%
           
           left_join(
             by = "household_ID",
             
             students %>% 
-              select(household_ID, attestation_positive) %>% 
-              rename(student_attestation_positive = attestation_positive)) %>%
+              select("household_ID", "attestation_positive") %>% 
+              rename(student_attestation_positive = "attestation_positive")) %>%
           
           mutate(
             
             household_attestation_positive = 
-              student_attestation_positive | n_adult_positive_attestations > 0,
+              .data$student_attestation_positive | .data$n_adult_positive_attestations > 0,
             
             # could simplify this to look more like the handling of test results, 
             # specifically, calculate "date of most recent positive attestation"
             # and use pmax on that.
             quarantine_end_date = 
               if_else(
-                household_attestation_positive,
+                .data$household_attestation_positive,
                 pmax(
                   na.rm = TRUE,
-                  quarantine_end_date,
+                  .data$quarantine_end_date,
                   cur_date + quarantine_length_after_positive_attestation),
-                quarantine_end_date
+                .data$quarantine_end_date
               )
             
           )
@@ -1058,27 +1053,26 @@ run_simulation = function(
           semi_join(
             by = "household_ID",
             students %>% 
-              filter(is.na(earliest_positive_test_collection_date))) %>%
-          filter(household_attestation_positive) %>%
+              filter(is.na(.data$earliest_positive_test_collection_date))) %>%
+          filter(.data$household_attestation_positive) %>%
           mutate(
             date_of_covid_education_outreach = 
               cur_date + wait_time_for_household_education_after_positive_attestation) %>%
           select(
-            household_ID,
-            date_of_covid_education_outreach,
-            n_adult_positive_attestations,
-            student_attestation_positive
+            "household_ID",
+            "date_of_covid_education_outreach",
+            "n_adult_positive_attestations",
+            "student_attestation_positive"
           )
         
         # merge duplicate pending outreaches to the same households:
         scheduled_household_outreach_efforts %<>%
           bind_rows(new_households_to_contact) %>%
-          group_by(household_ID) %>%
           summarise(
-            .groups = "drop",
-            date_of_covid_education_outreach = min(date_of_covid_education_outreach),
-            n_adult_positive_attestations = max(n_adult_positive_attestations),
-            student_attestation_positive = any(student_attestation_positive))
+            .by = "household_ID",
+            date_of_covid_education_outreach = min(.data$date_of_covid_education_outreach),
+            n_adult_positive_attestations = max(.data$n_adult_positive_attestations),
+            student_attestation_positive = any(.data$student_attestation_positive))
         
         if(verbose) message(sum(households$household_attestation_positive), " households attested positive today.")
         
@@ -1093,28 +1087,28 @@ run_simulation = function(
           left_join(
             by = "household_ID",
             households %>%
-              select(household_ID, quarantine_end_date) %>%
-              rename(household_quarantine_end_date = quarantine_end_date)
+              select("household_ID", "quarantine_end_date") %>%
+              rename(household_quarantine_end_date = "quarantine_end_date")
           ) %>%
           
           mutate(
             
             quarantine_end_date = if_else(
               condition = 
-                is.na(earliest_positive_test_collection_date),
+                is.na(.data$earliest_positive_test_collection_date),
               true = 
                 pmax(
                   na.rm = TRUE,
                   # class quarantine end date is accounted for below
-                  household_quarantine_end_date,
-                  quarantine_end_date), # they might already be quarantined for longer due to detected cluster in class
+                  .data$household_quarantine_end_date,
+                  .data$quarantine_end_date), # they might already be quarantined for longer due to detected cluster in class
               false = 
-                earliest_positive_test_collection_date + 
+                .data$earliest_positive_test_collection_date + 
                 quarantine_length_after_student_positive_test),
             
             student_quarantined_today = 
-              !is.na(quarantine_end_date) & 
-              (cur_date <= quarantine_end_date)
+              !is.na(.data$quarantine_end_date) & 
+              (cur_date <= .data$quarantine_end_date)
             
           ) %>%
           
@@ -1123,15 +1117,15 @@ run_simulation = function(
           
           left_join(
             by = "class",
-            classes %>% select(class, class_quarantined_today)
+            classes %>% select("class", "class_quarantined_today")
           ) %>%
           
           mutate(
             in_school_today = 
               cur_date >= in_person_school_start_date &
               calendar[i, "school_day", drop = TRUE] &
-              !class_quarantined_today &
-              !student_quarantined_today)
+              !.data$class_quarantined_today &
+              !.data$student_quarantined_today)
         
         if(verbose)
         {
@@ -1149,30 +1143,29 @@ run_simulation = function(
         # can't filter by in-school, bc I need to count enrolled students
         new_tests = 
           students %>% 
-          select(school, in_school_today, ID, infection_date) %>%
-          group_by(school) %>%
+          select("school", "in_school_today", "ID", "infection_date") %>%
           mutate(
+            .by = "school",
             tested_today = 
-              ID %in% sample(
+              .data$ID %in% sample(
                 replace = FALSE,
-                x = ID[in_school_today],
+                x = .data$ID[.data$in_school_today],
                 size = min(
-                  sum(in_school_today), 
+                  sum(.data$in_school_today), 
                   floor(n() * testing_fraction)))) %>% 
-          filter(tested_today) %>%
-          ungroup() %>%
+          filter(.data$tested_today) %>%
           # rowwise() %>% # might save some time by avoiding unnecessary RNG
           mutate(
             collection_date = cur_date,
             result_date = cur_date + wait_time_for_surveillance_test_results,
             test_type = "surveillance",
-            pr_positive = pr_test_positive(cur_date - infection_date),
+            pr_positive = pr_test_positive(cur_date - .data$infection_date),
             test_result = 
               if_else(
-                condition = tested_today,
+                condition = .data$tested_today,
                 true = rbernoulli(
                   n = n(),
-                  p = pr_positive),
+                  p = .data$pr_positive),
                 false = NA))
         
         test_results %<>% 
@@ -1211,41 +1204,39 @@ run_simulation = function(
           left_join(
             by = "class",
             students %>% 
-              group_by(class) %>% 
               summarise(
-                .groups = "drop",
+                .by = "class",
                 
                 "n_students_in_attendance_today" = 
-                  sum(in_school_today),
+                  sum(.data$in_school_today),
                 
                 "n_initially_uninfected_students_in_classroom_today" = 
-                  sum(in_school_today & !infected),
+                  sum(.data$in_school_today & !.data$infected),
                 
                 "n_students_quarantined_today" = 
-                  sum(student_quarantined_today | class_quarantined_today),
+                  sum(.data$student_quarantined_today | .data$class_quarantined_today),
                 
                 "n_infectious_students_in_classroom_today" = 
-                  sum(in_school_today & infectious_today),
+                  sum(.data$in_school_today & .data$infectious_today),
                 
                 "n_symptomatic_students_in_classroom_today" = 
-                  sum(in_school_today & symptomatic_today),
+                  sum(.data$in_school_today & .data$symptomatic_today),
                 
                 "n_initially_infected_students_in_classroom_today" = 
-                  sum(in_school_today & active_infection),
+                  sum(.data$in_school_today & .data$active_infection),
                 
                 "n_recovered_students_in_classroom_today" = 
-                  sum(in_school_today & 
-                        infected & 
-                        days_since_infected > last_symptomatic_day)))
+                  sum(.data$in_school_today & 
+                        .data$infected & 
+                        .data$days_since_infected > .data$last_symptomatic_day)))
         
         close_contact_groups = 
           students %>%
-          group_by(class, close_contact_group) %>%
           summarize(
-            .groups = "drop",
+            .by = c("class", "close_contact_group"),
             n_infectious_close_contacts_in_school_today = 
-              (n_close_contacts_in_class > 0) * 
-              sum(in_school_today & infectious_today))
+              (.data$n_close_contacts_in_class > 0) * 
+              sum(.data$in_school_today & .data$infectious_today))
         
         students %<>% 
           select(-any_of(c("n_infectious_students_in_classroom_today", "n_infectious_close_contacts_in_school_today"))) %>%
@@ -1256,62 +1247,61 @@ run_simulation = function(
             close_contact_groups) %>%
           left_join(
             by = "class",
-            classes %>% select(class, n_infectious_students_in_classroom_today)) %>%
+            classes %>% select("class", "n_infectious_students_in_classroom_today")) %>%
           mutate(
             
             pr_infected_from_school_today = 
               1 - 
-              (1 - risk_per_infected_close_contact)^n_infectious_close_contacts_in_school_today *
-              (1 - risk_per_infected_classmate)^(n_infectious_students_in_classroom_today),
+              (1 - .data$risk_per_infected_close_contact)^.data$n_infectious_close_contacts_in_school_today *
+              (1 - .data$risk_per_infected_classmate)^(.data$n_infectious_students_in_classroom_today),
             
             # TODO: consider simulating the possibility of re-infection after recovery
             infected_from_school_today =
-              in_school_today &
-              !immune & 
-              !infected &
+              .data$in_school_today &
+              !.data$immune & 
+              !.data$infected &
               rbernoulli(
                 n = n(),
-                p = pr_infected_from_school_today),
+                p = .data$pr_infected_from_school_today),
             
-            infected = infected | infected_from_school_today,
+            infected = .data$infected | .data$infected_from_school_today,
             
             infection_source = if_else(
-              infected_from_school_today,
+              .data$infected_from_school_today,
               "from school",
-              infection_source),
+              .data$infection_source),
             
-            active_infection = active_infection | infected_from_school_today,
+            active_infection = .data$active_infection | .data$infected_from_school_today,
             
             infection_date = 
               if_else(
-                condition = infected_from_school_today,
+                condition = .data$infected_from_school_today,
                 true = cur_date, 
-                false = infection_date))
+                false = .data$infection_date))
         
         classes %<>% 
           select(-any_of(daily_vars2)) %>%
           left_join(
             by = "class",
             students %>% 
-              group_by(class) %>% 
               summarise(
-                .groups = "drop",
+                .by = "class",
                 
                 n_infectious_students_at_home_today = 
-                  sum(!in_school_today & infectious_today),
+                  sum(!.data$in_school_today & .data$infectious_today),
                 
                 
                 n_uninfectious_students_at_home_today = 
-                  sum(!in_school_today & !infectious_today),
+                  sum(!.data$in_school_today & !.data$infectious_today),
                 
                 n_students_at_home_today = 
-                  sum(!in_school_today),
+                  sum(!.data$in_school_today),
                 
                 n_preinfectious_students_in_class_today = 
-                  sum(in_school_today & infected & days_since_infected < first_infectious_day),
+                  sum(.data$in_school_today & .data$infected & .data$days_since_infected < .data$first_infectious_day),
                 
                 n_transmissions_in_class_today = 
-                  sum(infected_from_school_today)))
+                  sum(.data$infected_from_school_today)))
         
       }
       
@@ -1329,29 +1319,29 @@ run_simulation = function(
             
             mutate(
               infected_outside_school_and_home_today = 
-                !immune & !infected &
+                !.data$immune & !.data$infected &
                 rbernoulli(
                   n = n(),
                   p = if_else(
-                    has_covid_safety_education,
+                    .data$has_covid_safety_education,
                     student_exogenous_infection_risk_per_day_with_education,
                     student_exogenous_infection_risk_per_day_without_education
                   )),
               
-              infected = infected | infected_outside_school_and_home_today,
+              infected = .data$infected | .data$infected_outside_school_and_home_today,
               
               infection_source = 
                 if_else(
-                  infected_outside_school_and_home_today,
+                  .data$infected_outside_school_and_home_today,
                   "exogenous",
-                  infection_source),
+                  .data$infection_source),
               
-              active_infection = active_infection | infected_outside_school_and_home_today,
+              active_infection = .data$active_infection | .data$infected_outside_school_and_home_today,
               
               infection_date = if_else(
-                infected_outside_school_and_home_today,
+                .data$infected_outside_school_and_home_today,
                 cur_date,
-                infection_date)) %>%
+                .data$infection_date)) %>%
             
             select(
               -any_of(
@@ -1362,34 +1352,34 @@ run_simulation = function(
             
             left_join(
               by = "household_ID",
-              households %>% select(household_ID, n_infectious_adults_in_household_today)
+              households %>% select("household_ID", "n_infectious_adults_in_household_today")
             ) %>%
             
             mutate(
               infected_by_household_adult_today = 
-                !immune & !infected &
+                !.data$immune & !.data$infected &
                 rbernoulli(
                   n = n(),
                   p = 1 - 
-                    (1 - pr_student_infected_per_infectious_household_adult_per_day)^n_infectious_adults_in_household_today),
+                    (1 - pr_student_infected_per_infectious_household_adult_per_day)^.data$n_infectious_adults_in_household_today),
               
-              infected = infected | infected_by_household_adult_today,
+              infected = .data$infected | .data$infected_by_household_adult_today,
               
               infection_source = 
                 if_else(
-                  infected_by_household_adult_today,
+                  .data$infected_by_household_adult_today,
                   "household adult",
-                  infection_source),
+                  .data$infection_source),
               
-              active_infection = active_infection | infected_by_household_adult_today,
+              active_infection = .data$active_infection | .data$infected_by_household_adult_today,
               
               infection_date = if_else(
-                infected_by_household_adult_today,
+                .data$infected_by_household_adult_today,
                 cur_date,
-                infection_date)
+                .data$infection_date)
             ) %>%
             
-            select(-infected_by_household_adult_today)
+            select(-"infected_by_household_adult_today")
           
         }
         
@@ -1399,28 +1389,28 @@ run_simulation = function(
           household_adults %<>%
             mutate(
               infected_outside_home_today = 
-                !immune & !infected &
+                !.data$immune & !.data$infected &
                 rbernoulli(
                   n = n(),
                   p = if_else(
-                    has_covid_safety_education,
+                    .data$has_covid_safety_education,
                     adult_exogenous_infection_risk_per_day_with_education,
                     adult_exogenous_infection_risk_per_day_without_education)),
               
-              infected = infected | infected_outside_home_today,
+              infected = .data$infected | .data$infected_outside_home_today,
               
               infection_source = 
                 if_else(
-                  infected_outside_home_today,
+                  .data$infected_outside_home_today,
                   "exogenous",
-                  infection_source),
+                  .data$infection_source),
               
-              active_infection = active_infection | infected_outside_home_today,
+              active_infection = .data$active_infection | .data$infected_outside_home_today,
               
               infection_date = if_else(
-                infected_outside_home_today,
+                .data$infected_outside_home_today,
                 cur_date,
-                infection_date),
+                .data$infection_date),
               
               infected_outside_home_today = NULL
             ) %>%
@@ -1432,26 +1422,26 @@ run_simulation = function(
             ) %>%
             mutate(
               infected_by_other_household_adult_today = 
-                !immune & !infected &
+                !.data$immune & !.data$infected &
                 rbernoulli(
                   n = n(),
                   p = 1 - 
-                    (1 - pr_household_adult_infected_per_infectious_household_adult_per_day)^n_infectious_adults_in_household_today),
+                    (1 - pr_household_adult_infected_per_infectious_household_adult_per_day)^.data$n_infectious_adults_in_household_today),
               
-              infected = infected | infected_by_other_household_adult_today,
+              infected = .data$infected | .data$infected_by_other_household_adult_today,
               
               infection_source = 
                 if_else(
-                  infected_by_other_household_adult_today,
+                  .data$infected_by_other_household_adult_today,
                   "other household adult",
-                  infection_source),
+                  .data$infection_source),
               
-              active_infection = active_infection | infected_by_other_household_adult_today,
+              active_infection = .data$active_infection | .data$infected_by_other_household_adult_today,
               
               infection_date = if_else(
-                infected_by_other_household_adult_today,
+                .data$infected_by_other_household_adult_today,
                 cur_date,
-                infection_date),
+                .data$infection_date),
               
               infected_by_other_household_adult_today = NULL
             ) %>%
@@ -1460,31 +1450,31 @@ run_simulation = function(
             left_join(
               by = "household_ID",
               students %>% 
-                select(household_ID, infectious_today) %>% 
-                rename(student_infectious_today = infectious_today)
+                select("household_ID", "infectious_today") %>% 
+                rename(student_infectious_today = "infectious_today")
             ) %>%
             mutate(
               infected_by_student_today = 
-                !immune & !infected &
-                student_infectious_today &
+                !.data$immune & !.data$infected &
+                .data$student_infectious_today &
                 rbernoulli(
                   n = n(),
                   p = pr_household_adult_infected_by_infectious_student_per_day),
               
-              infected = infected | infected_by_student_today,
+              infected = .data$infected | .data$infected_by_student_today,
               
               infection_source = 
                 if_else(
-                  infected_by_student_today,
+                  .data$infected_by_student_today,
                   "student",
-                  infection_source),
+                  .data$infection_source),
               
-              active_infection = active_infection | infected_by_student_today,
+              active_infection = .data$active_infection | .data$infected_by_student_today,
               
               infection_date = if_else(
-                infected_by_student_today,
+                .data$infected_by_student_today,
                 cur_date,
-                infection_date),
+                .data$infection_date),
               
               infected_by_student_today = NULL)
           
@@ -1498,10 +1488,10 @@ run_simulation = function(
         
         household_education_calls_today = 
           scheduled_household_outreach_efforts %>% 
-          filter(date_of_covid_education_outreach == cur_date)
+          filter(.data$date_of_covid_education_outreach == cur_date)
         
         scheduled_household_outreach_efforts %<>%
-          filter(date_of_covid_education_outreach > cur_date)
+          filter(.data$date_of_covid_education_outreach > cur_date)
         
         completed_household_outreach_efforts %<>%
           bind_rows(household_education_calls_today)
@@ -1514,22 +1504,22 @@ run_simulation = function(
         households %<>%
           mutate(
             received_outreach_after_positive_attestation = 
-              received_outreach_after_positive_attestation | 
-              household_ID %in% household_education_calls_today$household_ID)
+              .data$received_outreach_after_positive_attestation | 
+              .data$household_ID %in% household_education_calls_today$household_ID)
         
         household_adults %<>%
           mutate(
             has_covid_safety_education = 
-              has_covid_safety_education | 
-              (receptive_to_outreach &
-                 household_ID %in% household_education_calls_today$household_ID))
+              .data$has_covid_safety_education | 
+              (.data$receptive_to_outreach &
+                 .data$household_ID %in% household_education_calls_today$household_ID))
         
         students %<>%
           mutate(
             has_covid_safety_education = 
-              has_covid_safety_education | 
-              (receptive_to_outreach &
-                 household_ID %in% household_education_calls_today$household_ID))
+              .data$has_covid_safety_education | 
+              (.data$receptive_to_outreach &
+                 .data$household_ID %in% household_education_calls_today$household_ID))
         
         if(verbose) 
           message(nrow(household_education_calls_today), " households received outreach calls today.")
@@ -1545,22 +1535,22 @@ run_simulation = function(
           
           households_to_test_adults = 
             household_education_calls_today %>%
-            filter(n_adult_positive_attestations > 0)
+            filter(.data$n_adult_positive_attestations > 0)
           
           households_to_test_students = 
             household_education_calls_today %>%
-            filter(student_attestation_positive)
+            filter(.data$student_attestation_positive)
           
           new_scheduled_tests = 
             household_adults %>% 
             filter(
-              household_ID %in% households_to_test_adults$household_ID
+              .data$household_ID %in% households_to_test_adults$household_ID
             ) %>%
-            select(ID) %>%
+            select("ID") %>%
             bind_rows(
               students %>%
-                filter(household_ID %in% households_to_test_students$household_ID) %>%
-                select(ID)
+                filter(.data$household_ID %in% households_to_test_students$household_ID) %>%
+                select("ID")
             ) %>%
             mutate(
               collection_date = cur_date + wait_time_for_testing_after_outreach)
@@ -1575,19 +1565,19 @@ run_simulation = function(
           
           tests_scheduled_today =
             scheduled_tests %>% 
-            filter(collection_date == cur_date)
+            filter(.data$collection_date == cur_date)
           
           new_adult_tests = 
             household_adults %>%
-            select(ID, infection_date) %>%
-            filter(ID %in% tests_scheduled_today$ID) %>%
+            select("ID", "infection_date") %>%
+            filter(.data$ID %in% tests_scheduled_today$ID) %>%
             mutate(
               collection_date = cur_date,
               result_date = cur_date + wait_time_for_attestation_triggered_test_results,
               test_type = "attestation followup",
               test_result = rbernoulli(
                 n = n(),
-                p = pr_test_positive(cur_date - infection_date)))
+                p = pr_test_positive(cur_date - .data$infection_date)))
           
           test_results %<>%
             bind_rows(new_adult_tests)
@@ -1602,16 +1592,16 @@ run_simulation = function(
           new_student_tests = 
             students %>%
             select(
-              ID, infected, infection_date
+              "ID", "infected", "infection_date"
             ) %>%
-            filter(ID %in% tests_scheduled_today$ID) %>%
+            filter(.data$ID %in% tests_scheduled_today$ID) %>%
             mutate(
               collection_date = cur_date,
               result_date = cur_date + wait_time_for_attestation_triggered_test_results,
               test_type = "attestation followup",
               test_result = rbernoulli(
                 n = n(),
-                p = pr_test_positive(cur_date - infection_date)))
+                p = pr_test_positive(cur_date - .data$infection_date)))
           
           test_results %<>%
             bind_rows(new_student_tests)
@@ -1637,34 +1627,33 @@ run_simulation = function(
         
         adult_infection_counts_by_household = 
           household_adults %>% 
-          group_by(household_ID) %>%
           summarize(
-            .groups = "drop",
+            .by = "household_ID",
             "n household adults educated about COVID safety" = 
-              sum(has_covid_safety_education),
+              sum(.data$has_covid_safety_education),
             "n adults actively infected today" =
-              sum(active_infection | (infection_date == cur_date), na.rm = TRUE),
+              sum(.data$active_infection | (.data$infection_date == cur_date), na.rm = TRUE),
             "n household adults infected (cumulative)" = 
-              sum(infected, na.rm = TRUE),
+              sum(.data$infected, na.rm = TRUE),
             
             "n household adults infected from exogenous sources (cumulative)" = 
-              sum(infection_source == "exogenous", na.rm = TRUE),
+              sum(.data$infection_source == "exogenous", na.rm = TRUE),
             
             "n household adults newly infected today" = 
-              sum(infected & infection_date == cur_date, na.rm = TRUE),
+              sum(.data$infected & .data$infection_date == cur_date, na.rm = TRUE),
             
             "n household adults infected by student today" = 
-              sum(infected & infection_date == cur_date & infection_source == "student", na.rm = TRUE),
+              sum(.data$infected & .data$infection_date == cur_date & .data$infection_source == "student", na.rm = TRUE),
             
             "n household adults infected from exogenous source today" = 
-              sum(infected & infection_date == cur_date & infection_source == "exogenous", na.rm = TRUE),
+              sum(.data$infected & .data$infection_date == cur_date & .data$infection_source == "exogenous", na.rm = TRUE),
             
             "n household adults infected since baseline (cumulative)" = 
-              sum(infected & !infected_at_baseline),
+              sum(.data$infected & !.data$infected_at_baseline),
             "n household adults infected by other household adult (cumulative)" = 
-              sum(infected & infection_source == "other household adult"),
+              sum(.data$infected & .data$infection_source == "other household adult"),
             "n household adults infected by student (cumulative)" = 
-              sum(infected & infection_source == "student")
+              sum(.data$infected & .data$infection_source == "student")
           )
         
         cols_to_overwrite = 
@@ -1680,11 +1669,10 @@ run_simulation = function(
         
         household_data_by_class = 
           households %>%
-          group_by(class) %>%
           summarise(
-            .groups = 'drop',
+            .by = "class",
             "n households with positive attestations today" = 
-              sum(household_attestation_positive),
+              sum(.data$household_attestation_positive),
             
             "n households associated with class" = n(),
             across(
@@ -1708,11 +1696,10 @@ run_simulation = function(
         
         student_infection_counts_by_household = 
           students %>%
-          group_by(household_ID) %>%
           summarize(
-            .groups = "drop",
+            .by = "household_ID",
             "n students actively infected today" = 
-              sum(active_infection | (infection_date == cur_date), na.rm = TRUE))
+              sum(.data$active_infection | (.data$infection_date == cur_date), na.rm = TRUE))
         
         cols_to_overwrite2 = 
           setdiff(
@@ -1727,39 +1714,38 @@ run_simulation = function(
         
         student_infection_counts_by_class = 
           students %>% 
-          group_by(class) %>% 
           summarise(
-            .groups = "drop",
+            .by = "class",
             
             "n students educated about COVID safety (cumulative)" = 
-              sum(has_covid_safety_education),
+              sum(.data$has_covid_safety_education),
             
             "n students newly infected today" = 
-              sum(infected & infection_date == cur_date),
+              sum(.data$infected & .data$infection_date == cur_date),
             
             "n_students_infected_cumulative" = 
-              sum(infected),
+              sum(.data$infected),
             
             "n students newly infected from exogenous source today" = 
-              sum(infected & infection_date == cur_date & infection_source == "exogenous", na.rm = TRUE),
+              sum(.data$infected & .data$infection_date == cur_date & .data$infection_source == "exogenous", na.rm = TRUE),
             
             "n_students_infected_since_baseline_cumulative" = 
-              sum(infected & !infected_at_baseline),
+              sum(.data$infected & !.data$infected_at_baseline),
             
             "n students infected from exogenous sources (cumulative)" = 
-              sum(infection_source == "exogenous", na.rm = TRUE),
+              sum(.data$infection_source == "exogenous", na.rm = TRUE),
             
             "n students infected by household adult (cumulative)" = 
-              sum(infection_source == "household adult", na.rm = TRUE),
+              sum(.data$infection_source == "household adult", na.rm = TRUE),
             
             "n_students_infected_outside_school_cumulative" = 
-              sum(is.element(infection_source,  c("household adult", "exogenous")), na.rm = TRUE),
+              sum(is.element(.data$infection_source,  c("household adult", "exogenous")), na.rm = TRUE),
             
             "n_students_infected_at_home_cumulative" = 
-              sum(is.element(infection_source,  c("household adult")), na.rm = TRUE),
+              sum(is.element(.data$infection_source,  c("household adult")), na.rm = TRUE),
             
             "n_transmissions_in_class_cumulative" = 
-              sum(infection_source == "from school", na.rm = TRUE))
+              sum(.data$infection_source == "from school", na.rm = TRUE))
         
         vars_to_overwrite = 
           setdiff(names(student_infection_counts_by_class), "class")
@@ -1776,7 +1762,7 @@ run_simulation = function(
       student_records %<>% 
         bind_rows(
           students %>% 
-            select(c(ID, class, in_school_today))%>%
+            select(c("ID", "class", "in_school_today"))%>%
             mutate(date = cur_date))
       
       class_records %<>% bind_rows(

@@ -1,6 +1,6 @@
 Package: school.epi.abm
 Title: A model of infectious disease epidemic and mitigation dynamics in K-6 schools
-Version: 0.0.0.9000
+Version: 0.0.0.9001
 Authors@R: 
     person(given = "Douglas Ezra",
            family = "Morrison",

@@ -25,11 +25,10 @@ summarize_records = function(
   ),
   school_records_by_date = 
     class_records %>% 
-    group_by(date, school_day, school) %>%
     summarize(
-      .groups = "drop",
+      .by = c("date", "school_day", "school"),
       "n_classes_in_school" = n(),
-      "n_classes_quarantined_today" = sum(class_quarantined_today),
+      "n_classes_quarantined_today" = sum(.data$class_quarantined_today),
       
       across(
         any_of(
@@ -78,34 +77,33 @@ summarize_records = function(
   
   
   school_records_by_date %<>%
-    group_by(school) %>%
-    arrange(date) %>%
     mutate(
+      .by = "school",
       
       "n student-days missed (cumulative)" = 
-        cumsum(n_students_quarantined_today * school_day),
+        cumsum(.data$n_students_quarantined_today * .data$school_day),
       
       "% of households contacted after positive attestations (cumulative)" =
-        `n households that have received outreach` / `n households associated with class` * 100,
+        .data$`n households that have received outreach` / .data$`n households associated with class` * 100,
       
       "% of households with positive attestations today" = 
-        `n households with positive attestations today` / `n households associated with class` * 100,
+        .data$`n households with positive attestations today` / .data$`n households associated with class` * 100,
       
       "% of household adults newly infected today" = 
-        `n household adults newly infected today`/ n_household_adults_associated_with_class * 100,
+        .data$`n household adults newly infected today`/ .data$n_household_adults_associated_with_class * 100,
       
       "% of household adults educated about COVID safety (cumulative)" = 
-        `n household adults educated about COVID safety` / n_household_adults_associated_with_class * 100,
+        .data$`n household adults educated about COVID safety` / .data$n_household_adults_associated_with_class * 100,
       
       "% of household adults newly infected from exogenous sources today" = 
-        `n household adults infected from exogenous source today`/ n_household_adults_associated_with_class * 100,
+        .data$`n household adults infected from exogenous source today`/ .data$n_household_adults_associated_with_class * 100,
       
       "% of household adults newly infected by student today" = 
-        `n household adults infected by student today`/ n_household_adults_associated_with_class * 100,
+        .data$`n household adults infected by student today`/ .data$n_household_adults_associated_with_class * 100,
       
       
       "% of enrolled students in school today" = 
-        (n_students_in_attendance_today/n_students_on_roster) * 100,
+        (.data$n_students_in_attendance_today/.data$n_students_on_roster) * 100,
       
       # "% of students in school today.CL" = 
       #   t.test(n_students_in_attendance_today/n_students_on_roster)$conf.int[1]*100,
@@ -114,126 +112,126 @@ summarize_records = function(
       #   t.test(n_students_in_attendance_today/n_students_on_roster)$conf.int[2]*100,
       
       "% of enrolled students symptomatic in school today" = 
-        (n_symptomatic_students_in_classroom_today / n_students_on_roster) * 100,
+        (.data$n_symptomatic_students_in_classroom_today / .data$n_students_on_roster) * 100,
       
       "% of classes quarantined today" = 
-        (n_classes_quarantined_today / n_classes_in_school) * 100,
+        (.data$n_classes_quarantined_today / .data$n_classes_in_school) * 100,
       
       "% of household adults infected (cumulative)" = 
-        `n household adults infected (cumulative)` / n_household_adults_associated_with_class * 100,
+        .data$`n household adults infected (cumulative)` / .data$n_household_adults_associated_with_class * 100,
       
       "% of household adults infected since baseline (cumulative)" = 
-        `n household adults infected since baseline (cumulative)` / n_household_adults_associated_with_class * 100,
+        .data$`n household adults infected since baseline (cumulative)` / .data$n_household_adults_associated_with_class * 100,
       
       "% of household adults infected from exogenous sources (cumulative)" = 
-        `n household adults infected from exogenous sources (cumulative)` / n_household_adults_associated_with_class * 100,
+        .data$`n household adults infected from exogenous sources (cumulative)` / .data$n_household_adults_associated_with_class * 100,
       
       "% of household adults infected by student (cumulative)" = 
-        `n household adults infected by student (cumulative)` / n_household_adults_associated_with_class * 100,
+        .data$`n household adults infected by student (cumulative)` / .data$n_household_adults_associated_with_class * 100,
       
       "% of household adults infected by other household adult (cumulative)" = 
-        `n household adults infected by other household adult (cumulative)` / n_household_adults_associated_with_class * 100,
+        .data$`n household adults infected by other household adult (cumulative)` / .data$n_household_adults_associated_with_class * 100,
       
       
       "% of enrolled students educated about COVID safety (cumulative)" = 
-        `n students educated about COVID safety (cumulative)` / n_students_on_roster * 100,
+        .data$`n students educated about COVID safety (cumulative)` / .data$n_students_on_roster * 100,
       
       "% of enrolled students infected (cumulative)" = 
-        (n_students_infected_cumulative/n_students_on_roster) * 100,
+        (.data$n_students_infected_cumulative/.data$n_students_on_roster) * 100,
       
       "% of enrolled students infected since baseline (cumulative)" = 
-        (n_students_infected_since_baseline_cumulative/n_students_on_roster) * 100,
+        (.data$n_students_infected_since_baseline_cumulative/.data$n_students_on_roster) * 100,
       
       "% of enrolled students infected from exogenous sources (cumulative)" = 
-        (`n students infected from exogenous sources (cumulative)`/n_students_on_roster) * 100,
+        (.data$`n students infected from exogenous sources (cumulative)`/.data$n_students_on_roster) * 100,
       
       "% of enrolled students infected by a household adult (cumulative)" = 
-        (`n students infected by household adult (cumulative)`/n_students_on_roster) * 100,
+        (.data$`n students infected by household adult (cumulative)`/.data$n_students_on_roster) * 100,
       
       "% of enrolled students infected outside school (cumulative)" = 
-        (n_students_infected_outside_school_cumulative / n_students_on_roster) * 100,
+        (.data$n_students_infected_outside_school_cumulative / .data$n_students_on_roster) * 100,
       
       "% of enrolled students infected from school (cumulative)" = 
-        (n_transmissions_in_class_cumulative / n_students_on_roster) * 100,
+        (.data$n_transmissions_in_class_cumulative / .data$n_students_on_roster) * 100,
       "# schooldays quarantined per student (cumulative)" = 
-        (`n student-days missed (cumulative)`/n_students_on_roster),
+        (.data$`n student-days missed (cumulative)`/.data$n_students_on_roster),
       "# initially uninfected students in classroom today" = 
-        (n_initially_uninfected_students_in_classroom_today),
+        (.data$n_initially_uninfected_students_in_classroom_today),
       "# outbreaks detected per school (cumulative)" = 
-        n_outbreaks,
+        .data$n_outbreaks,
       "% of enrolled students newly infected today" = 
-        100 * `n students newly infected today` / n_students_on_roster,
+        100 * .data$`n students newly infected today` / .data$n_students_on_roster,
       
       "% of students newly infected from exogenous source today" = 
-        `n students newly infected from exogenous source today` / n_students_on_roster * 100,
+        .data$`n students newly infected from exogenous source today` / .data$n_students_on_roster * 100,
       
       "% of enrolled students newly infected from school today" = 
         100 * 
         if_else(
-          condition = school_day,
-          true = n_transmissions_in_class_today / n_students_on_roster,
+          condition = .data$school_day,
+          true = .data$n_transmissions_in_class_today / .data$n_students_on_roster,
           false = as.numeric(NA)),
       "% attendees infectious today" = 
-        100 * (n_infectious_students_in_classroom_today / n_students_in_attendance_today),
+        100 * (.data$n_infectious_students_in_classroom_today / .data$n_students_in_attendance_today),
       
       "% of enrolled students infectious at school today" = 
         if_else(
-          school_day,
-          (n_infectious_students_in_classroom_today / n_students_on_roster) * 100,
+          .data$school_day,
+          (.data$n_infectious_students_in_classroom_today / .data$n_students_on_roster) * 100,
           as.numeric(NA)),
       
       "% of enrolled students at home today" = 
         if_else(
-          school_day,
-          (n_students_at_home_today / n_students_on_roster) * 100,
+          .data$school_day,
+          (.data$n_students_at_home_today / .data$n_students_on_roster) * 100,
           as.numeric(NA)),
       
       "% of enrolled students uninfectious at home today" = 
         if_else(
-          school_day,
-          (n_uninfectious_students_at_home_today / n_students_on_roster) * 100,
+          .data$school_day,
+          (.data$n_uninfectious_students_at_home_today / .data$n_students_on_roster) * 100,
           as.numeric(NA)),
       
       "% of enrolled students infectious at home today" = 
         if_else(
-          school_day,
-          (n_infectious_students_at_home_today / n_students_on_roster) * 100,
+          .data$school_day,
+          (.data$n_infectious_students_at_home_today / .data$n_students_on_roster) * 100,
           as.numeric(NA)),
       
       "% classrooms with 3+ infected attendees today today" = 
-        (n_initially_infected_students_in_classroom_today >= 3) * 100)  %>%
+        (.data$n_initially_infected_students_in_classroom_today >= 3) * 100)  %>%
     
     mutate(
       
       "% of enrolled students symptomatic in school today" = 
         if_else(
-          school_day,
-          `% of enrolled students symptomatic in school today`,
+          .data$school_day,
+          .data$`% of enrolled students symptomatic in school today`,
           as.numeric(NA)
         ),
       `% of classes quarantined today` = 
         if_else(
-          date >= min(date[school_day]), # want this one to not have gaps
-          `% of classes quarantined today`,
+          .data$date >= min(.data$date[.data$school_day]), # want this one to not have gaps
+          .data$`% of classes quarantined today`,
           as.numeric(NA)
         ),
       
       "% of enrolled students infected from school (cumulative)" = 
         if_else(
-          date >= min(date[school_day]), # want this one to not have gaps
-          `% of enrolled students infected from school (cumulative)`,
+          .data$date >= min(.data$date[.data$school_day]), # want this one to not have gaps
+          .data$`% of enrolled students infected from school (cumulative)`,
           as.numeric(NA)
         ),
       "# schooldays quarantined per student (cumulative)"  = 
         if_else(
-          date >= min(date[school_day]), # want this one to not have gaps
-          `# schooldays quarantined per student (cumulative)`,
+          .data$date >= min(.data$date[.data$school_day]), # want this one to not have gaps
+          .data$`# schooldays quarantined per student (cumulative)`,
           as.numeric(NA)
         ),
       "% of enrolled students in school today" = 
         if_else(
-          school_day, 
-          `% of enrolled students in school today`, 
+          .data$school_day, 
+          .data$`% of enrolled students in school today`, 
           as.numeric(NA))) 
   
   columns_to_summarize = setdiff(
@@ -245,21 +243,19 @@ summarize_records = function(
   
   average_class_data_by_day = 
     school_records_by_date %>%
-    group_by_at(c(summary_grouping_columns, "school")) %>%
     summarize(
-      .groups = "drop",
+      .by = c(summary_grouping_columns, "school"),
       across(
         any_of(columns_to_summarize) & (where(is.numeric) | where(is.logical)),
         mean)) %>%
-    group_by_at(summary_grouping_columns) %>%
     summarize(
-      .groups = "drop",
+      .by = summary_grouping_columns,
       
       "% of schools with no on-campus transmissions so far" = 
-        mean(n_transmissions_in_class_cumulative == 0) * 100,
+        mean(.data$n_transmissions_in_class_cumulative == 0) * 100,
       
       "% of schools with no detected infection clusters so far" = 
-        mean(n_outbreaks == 0) * 100,
+        mean(.data$n_outbreaks == 0) * 100,
       
       across(
         any_of(columns_to_summarize) & where(is.numeric),
@@ -325,13 +321,13 @@ summarize_records = function(
     mutate(
       "% of schools with no detected infection clusters so far" = 
         if_else(
-          date >= min(date[school_day]) - days(1),
-          `% of schools with no detected infection clusters so far`,
+          .data$date >= min(.data$date[.data$school_day]) - days(1),
+          .data$`% of schools with no detected infection clusters so far`,
           as.numeric(NA)),
       "% of schools with no on-campus transmissions so far" = 
         if_else(
-          date >= min(date[school_day]) - days(1),
-          `% of schools with no on-campus transmissions so far`,
+          .data$date >= min(.data$date[.data$school_day]) - days(1),
+          .data$`% of schools with no on-campus transmissions so far`,
           as.numeric(NA)),
       across(where(is.numeric), signif, digits = 4))
   
