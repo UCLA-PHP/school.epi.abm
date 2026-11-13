@@ -1,3 +1,13 @@
+# school.epi.abm 0.0.0.9003
+
+* The example data file and analysis script in `inst/extdata` are renamed
+  without spaces: `lac-covid-data-simple.xlsx` and `abm-results-loop.R`.
+* The LA County incidence-rate report moves from `vignettes/` to
+  `analyses/`. It was a standalone report rather than a package vignette,
+  and the package no longer declares a vignette builder.
+* Development setup (`.Rprofile` and the Copilot setup workflow) no longer
+  loads the archived `pryr` package.
+
 # school.epi.abm 0.0.0.9002
 
 * Package code refers to data columns through rlang's data pronoun,

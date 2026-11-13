@@ -133,7 +133,7 @@ school.epi.abm/
 ├── man/                        # Generated documentation (don't edit directly)
 ├── tests/                      # Test files
 │   └── testthat/              # testthat files
-├── vignettes/                 # Package vignettes
+├── analyses/                  # Standalone analyses (build-ignored)
 ├── inst/                      # Installed files
 │   └── extdata/               # External data files
 ├── data/                      # Package datasets

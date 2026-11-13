@@ -11,7 +11,6 @@ if (interactive()) {
   suppressMessages(require(devtools)) # loads usethis
   suppressMessages(require(rsconnect)) # loads rsconnect
   suppressMessages(require(dplyr))
-  require("pryr") |> suppressMessages()
   suppressMessages(require(lubridate))
   suppressMessages(require(magrittr))
   suppressMessages(require(conflicted))

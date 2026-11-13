@@ -106,7 +106,7 @@ jobs:
             key_packages <- c("config", "conflicted", "dplyr", "fs", "ggplot2", 
                             "golem", "gridExtra", "here", "htmltools", "knitr",
                             "lemon", "lubridate", "magrittr", "pkgload", "plotly",
-                            "pryr", "purrr", "RColorBrewer", "scales", "shiny",
+                            "lobstr", "RColorBrewer", "scales", "shiny",
                             "shinydashboard", "useful", "rmarkdown", "beepr",
                             "readr", "DescTools")
             for (pkg in key_packages) {
