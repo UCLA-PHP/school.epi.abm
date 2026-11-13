@@ -1,3 +1,9 @@
+# school.epi.abm 0.0.0.9004
+
+* The package has its first tests: smoke tests for `run_simulation()`,
+  `summarize_records()`, `analyze_results()` and `plot1_plotly()`, plus a
+  snapshot of seeded results that fails if a change alters them.
+
 # school.epi.abm 0.0.0.9003
 
 * The example data file and analysis script in `inst/extdata` are renamed
