@@ -19,12 +19,12 @@ analyze_results = function(simulation_outputs)
     slice_tail(n = 1) %>%
     select(-all_of(cols_to_exclude))
   
-  list_inputs = sapply(F = is.list, X = inputs)
+  list_inputs = sapply(FUN = is.list, X = inputs)
   
   inputs[list_inputs] = 
     sapply(
       X = inputs[list_inputs],
-      F = function(x)
+      FUN = function(x)
       {
         paste(x, collapse = ", ")
       }
