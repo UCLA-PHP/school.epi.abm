@@ -5,8 +5,9 @@
   the help page for `summarize_records()` matches its code again, and the
   citation in `run_simulation()`'s help uses `\doi{}`.
 * Packages used only by the analysis scripts and the app launcher
-  (conflicted, ggplot2, htmltools, knitr, lemon, pkgload, RColorBrewer,
-  scales) move from Imports to Suggests, and the unused gridExtra is
+  (`conflicted`, `ggplot2`, `htmltools`, `knitr`, `lemon`, `pkgload`,
+  `RColorBrewer`, `scales`) move from Imports to Suggests, and the unused
+  `gridExtra` is
   dropped. The Title is in title case. Seeded simulation results are
   unchanged.
 
@@ -14,8 +15,8 @@
 
 * Package code follows the lab style guide
   (<https://morrison-lab.github.io/psc/>): the native pipe `|>` replaces
-  magrittr pipes (so the package now needs R >= 4.1.0 and no longer
-  imports magrittr), `<-` replaces `=` for assignment, lines are wrapped
+  `magrittr` pipes (so the package now needs R >= 4.1.0 and no longer
+  imports `magrittr`), `<-` replaces `=` for assignment, lines are wrapped
   at 80 characters, and commented-out code is removed.
 * A `.lintr.R` file applies the lab's shared linters from the `lms`
   package. Seeded simulation results are unchanged.
@@ -50,7 +51,7 @@
 
 # school.epi.abm 0.0.0.9002
 
-* Package code refers to data columns through rlang's data pronoun,
+* Package code refers to data columns through the `rlang` data pronoun,
   to function arguments through its environment pronoun, and groups
   with `.by`, so R CMD check no longer reports undefined global
   variables for them. Seeded simulation results and summaries are
