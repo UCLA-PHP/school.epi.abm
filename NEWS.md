@@ -1,3 +1,10 @@
+# school.epi.abm 0.0.0.9005
+
+* `DESCRIPTION` and `citation("school.epi.abm")` now cite the published
+  paper (Morrison et al., 2023, <https://doi.org/10.3389/fpubh.2023.856940>)
+  instead of the 2021 preprint.
+* `DESCRIPTION` lists the GitHub repository and issue tracker.
+
 # school.epi.abm 0.0.0.9004
 
 * The package has its first tests: smoke tests for `run_simulation()`,

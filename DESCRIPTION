@@ -1,12 +1,14 @@
 Package: school.epi.abm
 Title: A model of infectious disease epidemic and mitigation dynamics in K-6 schools
-Version: 0.0.0.9004
+Version: 0.0.0.9005
 Authors@R: 
     person(given = "Douglas Ezra",
            family = "Morrison",
            role = c("aut", "cre"),
            email = "demorrison@ucdavis.edu")
-Description: This package implements an agent-based model of infectious disease epidemic and mitigation dynamics in K6 schools, as described in https://www.medrxiv.org/content/10.1101/2021.02.27.21252535v1.
+Description: This package implements an agent-based model of infectious disease
+    epidemic and mitigation dynamics in K-6 schools, as described in
+    Morrison et al. (2023) <doi:10.3389/fpubh.2023.856940>.
 License: MIT + file LICENSE
 Imports: 
     config,
@@ -44,6 +46,9 @@ Suggests:
     withr
 Depends: 
     R (>= 2.10)
-URL: https://ucla-php.github.io/school.epi.abm/
+URL: https://ucla-php.github.io/school.epi.abm/,
+    https://github.com/UCLA-PHP/school.epi.abm
+BugReports: https://github.com/UCLA-PHP/school.epi.abm/issues
 Roxygen: list(markdown = TRUE)
 Config/testthat/edition: 3
+Language: en-US

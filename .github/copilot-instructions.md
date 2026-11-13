@@ -4,7 +4,7 @@
 
 `school.epi.abm` is an R package that implements an agent-based model of infectious disease epidemic and mitigation dynamics in K-6 schools. The model simulates COVID-19 infection spread and the effects of various mitigation strategies (testing, cohorting, masking, etc.) in elementary school settings.
 
-The package is published at <https://ucla-php.github.io/school.epi.abm/> and implements methods described in: https://doi.org/10.3389/fpubh.2023.1856940
+The package is published at <https://ucla-php.github.io/school.epi.abm/> and implements methods described in: https://doi.org/10.3389/fpubh.2023.856940
 
 ## Technology Stack
 
@@ -231,4 +231,4 @@ The simulation produces data frames with:
 - Project URL: https://ucla-php.github.io/school.epi.abm/
 - GitHub: https://github.com/UCLA-PHP/school.epi.abm
 - Contact: demorrison@ucdavis.edu
-- Reference paper: https://doi.org/10.3389/fpubh.2023.1856940
+- Reference paper: https://doi.org/10.3389/fpubh.2023.856940
