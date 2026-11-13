@@ -1,0 +1,14 @@
+# Fails a PR whose DESCRIPTION Version: differs from main's. The
+# dev-version bump happens after each merge, in bump-dev-version.yml.
+name: Version check
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  version-check:
+    permissions:
+      pull-requests: read
+      contents: read
+    uses: Morrison-Lab/gha/.github/workflows/version-check.yml@v2

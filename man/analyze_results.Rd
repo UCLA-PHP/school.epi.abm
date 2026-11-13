@@ -2,13 +2,19 @@
 % Please edit documentation in R/analyze_results.R
 \name{analyze_results}
 \alias{analyze_results}
-\title{Title}
+\title{Summarize a simulation's final outcomes}
 \usage{
 analyze_results(simulation_outputs)
 }
 \arguments{
-\item{simulation_outputs}{}
+\item{simulation_outputs}{the list returned by \code{\link[=run_simulation]{run_simulation()}}}
+}
+\value{
+a one-row data frame of inputs and final cumulative outcomes,
+with formatted "summary" columns giving each outcome's mean and
+quantile interval
 }
 \description{
-Title
+Combines the inputs of one \code{\link[=run_simulation]{run_simulation()}} call with its cumulative
+outcomes on the last simulated day, as one row per simulation.
 }

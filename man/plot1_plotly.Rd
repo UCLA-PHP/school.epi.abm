@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot1_plotly.R
 \name{plot1_plotly}
 \alias{plot1_plotly}
-\title{Title}
+\title{Plot simulated outcomes over time}
 \usage{
 plot1_plotly(
   class_records,
@@ -16,22 +16,27 @@ plot1_plotly(
 )
 }
 \arguments{
-\item{class_records}{}
+\item{class_records}{the \code{class_records} element of the list returned by
+\code{\link[=run_simulation]{run_simulation()}}}
 
-\item{average_class_data_by_day}{}
+\item{average_class_data_by_day}{daily summaries of \code{class_records}, as
+returned by \code{\link[=summarize_records]{summarize_records()}}}
 
-\item{plot3_ymax}{}
+\item{plot3_ymax}{minimum upper limit of the y-axis for student infection
+rates}
 
-\item{plot4_ymax}{}
+\item{plot4_ymax}{minimum upper limit of the y-axis for household adult
+infection rates}
 
-\item{plot5_ymax}{}
+\item{plot5_ymax}{minimum upper limit of the y-axis for quarantine and
+outreach outcomes}
 
-\item{x1}{}
-
-\item{x2}{}
-
-\item{x3}{}
+\item{x1, x2, x3}{currently unused}
+}
+\value{
+a plotly figure
 }
 \description{
-Title
+Draws interactive plots of daily and cumulative infection, quarantine and
+outreach outcomes for students and household adults.
 }

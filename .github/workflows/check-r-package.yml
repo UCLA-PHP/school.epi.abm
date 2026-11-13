@@ -1,0 +1,23 @@
+# The lab's hygiene suite for R packages: junk files, secrets, typos,
+# non-standard characters, duplicate roxygen, one function per file, etc.
+# It reports without failing for now, because the code still has several
+# functions per file; set fail: true once #8's refactors land.
+name: Check R package
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  check:
+    permissions:
+      contents: read
+    uses: Morrison-Lab/gha/.github/workflows/check-r-package.yml@v3
+    with:
+      fail: false
+      # Air's layout disagrees with the styler/lintr (lms) style the
+      # package follows, and this step ignores fail: false.
+      check-formatting: false

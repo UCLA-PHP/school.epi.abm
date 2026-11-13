@@ -1,0 +1,18 @@
+bibentry(
+  bibtype = "Article",
+  title = "Modeling {COVID-19} infection dynamics and mitigation strategies for in-person {K-6} instruction",
+  author = c(
+    person("Douglas E.", "Morrison"),
+    person("Roch", "Nianogo"),
+    person("Vladimir", "Manuel"),
+    person("Onyebuchi A.", "Arah"),
+    person("Nathaniel", "Anderson"),
+    person("Tony", "Kuo"),
+    person("Moira", "Inkelas")
+  ),
+  journal = "Frontiers in Public Health",
+  year = "2023",
+  volume = "11",
+  pages = "856940",
+  doi = "10.3389/fpubh.2023.856940"
+)

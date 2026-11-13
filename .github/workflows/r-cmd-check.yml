@@ -1,0 +1,18 @@
+# Reusable workflow reference:
+# https://morrison-lab.github.io/gha/reference/r-cmd-check.html
+name: R-CMD-check
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: r-cmd-check-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  R-CMD-check:
+    uses: Morrison-Lab/gha/.github/workflows/r-cmd-check.yml@v2

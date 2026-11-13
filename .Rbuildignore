@@ -17,5 +17,8 @@ $run_dev.*
 ^misc$
 ^renv$
 ^renv\.lock$
+^analyses$
+^\.rscignore$
+^\.lintr\.R$
 ^AGENTS\.md$
 ^\.claude$

@@ -1,0 +1,17 @@
+# Lints only the lines a PR adds or changes, so the existing lint backlog
+# (see #8) does not block unrelated PRs. lms-ref matches the commit that
+# .lintr.R names.
+name: lint-changed-lines
+
+on:
+  pull_request:
+
+jobs:
+  lint:
+    uses: Morrison-Lab/gha/.github/workflows/lint-changed-lines.yml@v3
+    with:
+      lms-ref: f777ed8afcaf70a9054a7b5e19207270ef253623
+      # Reports without failing for now: the restyle in #13 touches nearly
+      # every line, so "changed lines" is the whole lint backlog. Set
+      # fail: true once #8's follow-up refactors clear it.
+      fail: false

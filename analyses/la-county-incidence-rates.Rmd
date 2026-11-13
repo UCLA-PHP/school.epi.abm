@@ -40,7 +40,7 @@ data_folder_path = path_package(
 
 data_path = path(
   data_folder_path,
-  "LAC covid data simple.xlsx")
+  "lac-covid-data-simple.xlsx")
 ```
 
 ## looking at overall county cumulative case rates

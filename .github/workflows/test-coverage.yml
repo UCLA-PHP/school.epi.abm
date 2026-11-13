@@ -1,0 +1,15 @@
+name: Test coverage
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test-coverage:
+    uses: Morrison-Lab/gha/.github/workflows/test-coverage.yml@v2
+    secrets:
+      # Optional for public repos, but tokenless uploads are rate-limited.
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}

@@ -95,148 +95,245 @@ run_simulation(
 )
 }
 \arguments{
-\item{n_schools}{}
+\item{n_schools}{number of schools to simulate}
 
-\item{n_grades_per_school}{}
+\item{n_grades_per_school}{number of grades in each school}
 
-\item{n_classes_per_school}{}
+\item{n_classes_per_school}{number of classes in each school}
 
-\item{n_students_per_class}{}
+\item{n_students_per_class}{number of students enrolled in each class}
 
-\item{n_weeks_in_time_window}{}
+\item{n_weeks_in_time_window}{number of weeks to simulate after
+in-person school starts}
 
-\item{pr_student_infected_per_infectious_household_adult_per_day}{}
+\item{pr_student_infected_per_infectious_household_adult_per_day}{daily
+probability that a student is infected by each infectious adult in their
+household}
 
-\item{pr_household_adult_infected_by_infectious_student_per_day}{}
+\item{pr_household_adult_infected_by_infectious_student_per_day}{daily
+probability that a household adult is infected by an infectious student
+in the household}
 
-\item{pr_household_adult_infected_per_infectious_household_adult_per_day}{}
+\item{pr_household_adult_infected_per_infectious_household_adult_per_day}{daily probability that a household adult is infected by each other
+infectious adult in the household}
 
-\item{pr_student_symptomatic_if_infected}{}
+\item{pr_student_symptomatic_if_infected}{probability that an infected
+student develops symptoms}
 
-\item{pr_adult_symptomatic_if_infected}{}
+\item{pr_adult_symptomatic_if_infected}{probability that an infected adult
+develops symptoms}
 
-\item{test_specificity}{}
+\item{test_specificity}{probability that a test of an uninfected person is
+negative}
 
-\item{test_sensitivity_day_0}{}
+\item{test_sensitivity_day_0}{probability of a positive test on the day of
+infection}
 
-\item{test_sensitivity_day_1}{}
+\item{test_sensitivity_day_1}{probability of a positive test one day after
+infection}
 
-\item{attestation_sensitivity_symptomatic}{}
+\item{test sensitivity day 2}{probability of a positive test two days
+after infection}
 
-\item{attestation_sensitivity_asymptomatic}{}
+\item{test sensitivity day 3}{probability of a positive test three days
+after infection}
 
-\item{attestation_sensitivity_presymptomatic}{}
+\item{test sensitivity day 4}{probability of a positive test four days
+after infection}
 
-\item{attestation_specificity}{}
+\item{peak test sensitivity}{the maximum test sensitivity achieved during
+an infection, reached after day 4}
 
-\item{baseline_prevalence_of_covid_safety_education}{}
+\item{days of peak test sensitivity}{how long test sensitivity stays at
+its peak}
 
-\item{pr_become_educated_after_outreach}{}
+\item{test sensitivity on last day of symptoms}{test sensitivity on
+\code{last_active_infection_day}}
 
-\item{baseline_prevalence_adults}{}
+\item{daily decrease in sensitivity from peak until recovery}{daily change
+in test sensitivity between the end of the peak and
+\code{last_active_infection_day} (negative for a decrease)}
 
-\item{baseline_prevalence_students}{}
+\item{decrease in sensitivity per day after recovery}{daily decrease in
+test sensitivity after \code{last_active_infection_day}}
 
-\item{baseline_cumulative_incidence_adults}{}
+\item{attestation_sensitivity_symptomatic}{probability that a household
+with a symptomatic member reports it on the daily attestation}
 
-\item{baseline_cumulative_incidence_students}{}
+\item{attestation_sensitivity_asymptomatic}{probability of a positive
+attestation for an asymptomatic infection, representing attestations due
+to known exposures}
 
-\item{baseline_recovered_adults}{}
+\item{attestation_sensitivity_presymptomatic}{probability of a positive
+attestation for a presymptomatic infection}
 
-\item{baseline_recovered_students}{}
+\item{attestation_specificity}{probability that a household with no
+infection gives a negative attestation}
 
-\item{baseline_vaccinated_adults}{}
+\item{baseline_prevalence_of_covid_safety_education}{proportion of
+households that have COVID-safety education at the start of the
+simulation}
 
-\item{baseline_vaccinated_students}{}
+\item{pr_become_educated_after_outreach}{probability that a household
+becomes educated about COVID safety after receiving outreach}
 
-\item{increase_in_accuracy_after_education}{}
+\item{baseline_prevalence_adults}{proportion of adults actively infected at
+baseline}
 
-\item{decrease_in_exogenous_risk_after_education}{}
+\item{baseline_prevalence_students}{proportion of students actively
+infected at baseline}
 
-\item{adult_exogenous_infection_risk_per_day_without_education}{}
+\item{baseline_cumulative_incidence_adults}{proportion of adults ever
+infected by baseline}
 
-\item{adult_exogenous_infection_risk_per_day_with_education}{}
+\item{baseline_cumulative_incidence_students}{proportion of students ever
+infected by baseline}
 
-\item{student_exogenous_infection_risk_per_day_without_education}{}
+\item{baseline_recovered_adults}{proportion of adults recovered (and
+immune) at baseline}
 
-\item{student_exogenous_infection_risk_per_day_with_education}{}
+\item{baseline_recovered_students}{proportion of students recovered (and
+immune) at baseline}
 
-\item{risk_per_infected_close_contact}{}
+\item{baseline_vaccinated_adults}{proportion of adults vaccinated (and
+immune) at baseline}
 
-\item{risk_per_infected_classmate}{}
+\item{baseline_vaccinated_students}{proportion of students vaccinated (and
+immune) at baseline}
 
-\item{testing_fraction}{}
+\item{increase_in_accuracy_after_education}{proportional increase in
+attestation accuracy after COVID-safety education: the new accuracy is
+\code{a + (1 - a) * increase_in_accuracy_after_education}, where \code{a} is the
+accuracy before education}
 
-\item{first_infectious_day}{}
+\item{decrease_in_exogenous_risk_after_education}{proportional decrease in
+daily infection risk from outside the school and household after
+COVID-safety education}
 
-\item{last_infectious_day}{}
+\item{adult_exogenous_infection_risk_per_day_without_education}{daily
+probability that an adult without COVID-safety education is infected
+outside the school and household}
 
-\item{n_days_infectious}{}
+\item{adult_exogenous_infection_risk_per_day_with_education}{daily
+probability that an adult with COVID-safety education is infected outside
+the school and household}
 
-\item{first_symptomatic_day}{}
+\item{student_exogenous_infection_risk_per_day_without_education}{daily
+probability that a student without COVID-safety education is infected
+outside the school and household}
 
-\item{last_symptomatic_day}{}
+\item{student_exogenous_infection_risk_per_day_with_education}{daily
+probability that a student with COVID-safety education is infected
+outside the school and household}
 
-\item{last_active_infection_day}{}
+\item{risk_per_infected_close_contact}{daily probability that a student is
+infected by each infectious close contact in their class}
 
-\item{quarantine_length_after_adult_positive_test}{}
+\item{risk_per_infected_classmate}{daily probability that a student is
+infected by each infectious classmate}
 
-\item{quarantine_length_after_student_positive_test}{}
+\item{testing_fraction}{proportion of each school's enrolled students
+tested on each surveillance testing day}
 
-\item{quarantine_length_after_positive_attestation}{}
+\item{first_infectious_day}{time from infection until a person becomes
+infectious}
 
-\item{quarantine_length_after_outbreak}{}
+\item{last_infectious_day}{time from infection until a person stops being
+infectious}
 
-\item{in_person_school_start_date}{}
+\item{n_days_infectious}{number of days a person is infectious}
 
-\item{wait_time_for_surveillance_test_results}{}
+\item{first_symptomatic_day}{time from infection until symptoms start, for
+symptomatic infections}
 
-\item{wait_time_for_attestation_triggered_test_results}{}
+\item{last_symptomatic_day}{time from infection until symptoms end, for
+symptomatic infections}
 
-\item{wait_time_for_household_education_after_positive_attestation}{}
+\item{last_active_infection_day}{time from infection until the infection
+resolves}
 
-\item{wait_time_for_testing_after_outreach}{}
+\item{quarantine_length_after_adult_positive_test}{how long a student
+quarantines after a household adult tests positive}
 
-\item{surveillance_testing_days}{}
+\item{quarantine_length_after_student_positive_test}{how long a student
+quarantines after testing positive}
 
-\item{days_from_baseline_collection_until_baseline_return}{}
+\item{quarantine_length_after_positive_attestation}{how long a student
+quarantines after a positive attestation}
 
-\item{baseline_return_date}{}
+\item{quarantine_length_after_outbreak}{how long a class quarantines after
+an outbreak is detected}
 
-\item{baseline_collection_date}{}
+\item{in_person_school_start_date}{the date in-person school starts (a
+\link[base:Date]{base::Date})}
 
-\item{n_students_recently_in_class_and_diagnosed_for_outbreak}{}
+\item{wait_time_for_surveillance_test_results}{time from a surveillance
+test until its result is returned}
 
-\item{cluster_time_window}{}
+\item{wait_time_for_attestation_triggered_test_results}{time from a test
+triggered by a positive attestation until its result is returned}
 
-\item{n_adults_per_household}{}
+\item{wait_time_for_household_education_after_positive_attestation}{time
+from a positive attestation until the household receives outreach}
 
-\item{browse_at_start_of_days}{}
+\item{wait_time_for_testing_after_outreach}{time from outreach until the
+household is tested}
 
-\item{browse_before_return}{}
+\item{surveillance_testing_days}{names of the weekdays on which
+surveillance testing happens, such as \code{"Monday"}}
 
-\item{n_close_contacts_in_class}{}
+\item{days_from_baseline_collection_until_baseline_return}{time from
+baseline test collection until baseline results are returned}
 
-\item{print_args}{}
+\item{baseline_return_date}{the date baseline test results are returned (a
+\link[base:Date]{base::Date})}
 
-\item{verbose}{}
+\item{baseline_collection_date}{the date baseline tests are collected (a
+\link[base:Date]{base::Date})}
 
-\item{plot_data}{}
+\item{n_students_recently_in_class_and_diagnosed_for_outbreak}{number of
+students in one class diagnosed within \code{cluster_time_window} that counts
+as an outbreak}
 
-\item{plot3_ymax}{}
+\item{cluster_time_window}{time window for counting diagnoses toward an
+outbreak}
 
-\item{in_shiny}{used to provide progress reporting to the dashboard when running the model through the Shiny GUI}
+\item{n_adults_per_household}{number of adults in each student's household}
 
-\item{`peak}{test sensitivity` The maximum test sensitivity achieved during an infection}
+\item{browse_at_start_of_days}{if \code{TRUE}, call \code{\link[=browser]{browser()}} at the start of
+each simulated day (for debugging)}
 
-\item{`days}{of peak test sensitivity`}
+\item{browse_before_return}{if \code{TRUE}, call \code{\link[=browser]{browser()}} before returning
+(for debugging)}
 
-\item{`test}{sensitivity on last day of symptoms`}
+\item{n_close_contacts_in_class}{size of the close-contact groups that each
+class is divided into}
 
-\item{`daily}{decrease in sensitivity from peak until recovery`}
+\item{print_args}{if \code{TRUE}, print every argument value at the start}
 
-\item{`decrease}{in sensitivity per day after recovery`}
+\item{verbose}{if \code{TRUE}, print progress messages}
+
+\item{plot_data}{if \code{TRUE}, plot interim results each simulated school day}
+
+\item{plot3_ymax}{minimum upper limit of the y-axis for the interim plot of
+student infection rates}
+
+\item{in_shiny}{used to provide progress reporting to the dashboard when
+running the model through the Shiny GUI}
+}
+\value{
+a list with elements \code{class_records}, a data frame with one row
+per class per simulated day, and \code{inputs}, a list of the argument values
+used
 }
 \description{
-Run the agent-based model
+Simulates COVID-19 transmission among students in K-6 classrooms and the
+adults in their households, under a chosen combination of surveillance
+testing, symptom attestation, quarantine, and COVID-safety education
+outreach. The model is described in Morrison et al. (2023),
+\doi{10.3389/fpubh.2023.856940}.
+}
+\details{
+Probabilities are on the 0--1 scale. Durations and offsets are
+\code{\link[lubridate:days]{lubridate::days()}} periods unless noted otherwise.
 }

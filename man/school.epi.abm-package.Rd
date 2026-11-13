@@ -4,19 +4,26 @@
 \name{school.epi.abm-package}
 \alias{school.epi.abm}
 \alias{school.epi.abm-package}
-\title{school.epi.abm: A model of infectious disease epidemic and mitigation dynamics in K-6 schools}
+\title{school.epi.abm: A Model of Infectious Disease Epidemic and Mitigation Dynamics in K-6 Schools}
 \description{
-This package implements an agent-based model of infectious disease epidemic and mitigation dynamics in K6 schools, as described in https://www.medrxiv.org/content/10.1101/2021.02.27.21252535v1.
+Implements an agent-based model of infectious disease epidemic and mitigation dynamics in K-6 schools, as described in Morrison et al. (2023) \doi{10.3389/fpubh.2023.856940}.
 }
 \seealso{
 Useful links:
 \itemize{
   \item \url{https://ucla-php.github.io/school.epi.abm/}
+  \item \url{https://github.com/UCLA-PHP/school.epi.abm}
+  \item Report bugs at \url{https://github.com/UCLA-PHP/school.epi.abm/issues}
 }
 
 }
 \author{
 \strong{Maintainer}: Douglas Ezra Morrison \email{demorrison@ucdavis.edu}
+
+Authors:
+\itemize{
+  \item Douglas Ezra Morrison \email{demorrison@ucdavis.edu}
+}
 
 }
 \keyword{internal}

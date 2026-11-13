@@ -1,47 +1,53 @@
 Package: school.epi.abm
-Title: A model of infectious disease epidemic and mitigation dynamics in K-6 schools
+Title: A Model of Infectious Disease Epidemic and Mitigation Dynamics in
+    K-6 Schools
 Version: 0.0.0.9002
 Authors@R: 
     person(given = "Douglas Ezra",
            family = "Morrison",
            role = c("aut", "cre"),
            email = "demorrison@ucdavis.edu")
-Description: This package implements an agent-based model of infectious disease epidemic and mitigation dynamics in K6 schools, as described in https://www.medrxiv.org/content/10.1101/2021.02.27.21252535v1.
+Description: Implements an agent-based model of infectious disease
+    epidemic and mitigation dynamics in K-6 schools, as described in
+    Morrison et al. (2023) <doi:10.3389/fpubh.2023.856940>.
 License: MIT + file LICENSE
 Imports: 
     config,
-    conflicted,
     dplyr (>= 1.1.0),
     fs,
-    ggplot2,
     golem,
-    gridExtra,
     here,
-    htmltools,
-    knitr,
-    lemon,
     lubridate,
-    magrittr,
-    pkgload,
     plotly,
     lobstr,
-    RColorBrewer,
     rlang,
-    scales,
     shiny,
     shinydashboard,
     stats,
     useful
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.3.3
 Suggests: 
+    conflicted,
+    ggplot2,
+    htmltools,
+    knitr,
+    lemon,
+    pkgload,
+    RColorBrewer,
     rmarkdown,
+    scales,
     beepr,
     readr,
-    DescTools
-VignetteBuilder: knitr
+    DescTools,
+    testthat (>= 3.0.0),
+    withr
 Depends: 
-    R (>= 2.10)
-URL: https://ucla-php.github.io/school.epi.abm/
+    R (>= 4.1.0)
+URL: https://ucla-php.github.io/school.epi.abm/,
+    https://github.com/UCLA-PHP/school.epi.abm
+BugReports: https://github.com/UCLA-PHP/school.epi.abm/issues
 Roxygen: list(markdown = TRUE)
+Config/testthat/edition: 3
+Language: en-US
+Config/roxygen2/version: 8.1.1

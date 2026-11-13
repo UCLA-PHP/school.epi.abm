@@ -82,4 +82,4 @@ analyze_results(simulation_outputs)
 
 ```
 
-The subfolder `inst/extdata` contains the analysis script `ABM results loop.R`, which can be used to loop over a table of input conditions (specified in that script as the tibble `conditions_to_cross`) and reproduce the tables in the corresponding article (<https://doi.org/10.3389/fpubh.2023.856940>).
+The subfolder `inst/extdata` contains the analysis script `abm-results-loop.R`, which can be used to loop over a table of input conditions (specified in that script as the tibble `conditions_to_cross`) and reproduce the tables in the corresponding article (<https://doi.org/10.3389/fpubh.2023.856940>).
