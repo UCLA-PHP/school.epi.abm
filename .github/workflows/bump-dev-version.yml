@@ -1,0 +1,16 @@
+# Opens a PR that bumps the dev version after each merge to main.
+# Without a WORKFLOW_TOKEN secret the bump PR's own checks do not run.
+name: Bump dev version
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  bump:
+    permissions:
+      contents: write
+      pull-requests: write
+    uses: Morrison-Lab/gha/.github/workflows/bump-dev-version.yml@v2
+    secrets:
+      WORKFLOW_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}
