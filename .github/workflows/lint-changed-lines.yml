@@ -11,3 +11,7 @@ jobs:
     uses: Morrison-Lab/gha/.github/workflows/lint-changed-lines.yml@v3
     with:
       lms-ref: f777ed8afcaf70a9054a7b5e19207270ef253623
+      # Reports without failing for now: the restyle in #13 touches nearly
+      # every line, so "changed lines" is the whole lint backlog. Set
+      # fail: true once #8's follow-up refactors clear it.
+      fail: false
