@@ -1,6 +1,6 @@
 Package: school.epi.abm
 Title: A model of infectious disease epidemic and mitigation dynamics in K-6 schools
-Version: 0.0.0.9001
+Version: 0.0.0.9002
 Authors@R: 
     person(given = "Douglas Ezra",
            family = "Morrison",
@@ -11,7 +11,7 @@ License: MIT + file LICENSE
 Imports: 
     config,
     conflicted,
-    dplyr,
+    dplyr (>= 1.1.0),
     fs,
     ggplot2,
     golem,
@@ -24,12 +24,13 @@ Imports:
     magrittr,
     pkgload,
     plotly,
-    pryr,
-    purrr,
+    lobstr,
     RColorBrewer,
+    rlang,
     scales,
     shiny,
     shinydashboard,
+    stats,
     useful
 Encoding: UTF-8
 LazyData: true

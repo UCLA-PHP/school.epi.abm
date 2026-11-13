@@ -5,7 +5,7 @@ initialize_classes = function(
   
   classes = 
     schools %>%
-    summarise(
+    reframe(
       .by = "school",
       class = paste(.data$school, 1:.data$n_classes_in_school, sep = ":")) %>% 
     mutate(

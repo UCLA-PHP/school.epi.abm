@@ -77,6 +77,7 @@ summarize_records = function(
   
   
   school_records_by_date %<>%
+    arrange(.data$date) %>%
     mutate(
       .by = "school",
       
@@ -268,7 +269,7 @@ summarize_records = function(
             if(!inherits(test1, "try-error") & sum(!is.na(x)) > 3)
             {
               return(test1)
-            } else return(NA)
+            } else return(NA_real_)
           },
           "95% quantile" = function(x)
           {
@@ -276,7 +277,7 @@ summarize_records = function(
             if(!inherits(test1, "try-error") & sum(!is.na(x)) > 3)
             {
               return(test1)
-            } else return(NA)
+            } else return(NA_real_)
           },
           "2.5% quantile" = function(x)
           {
@@ -284,7 +285,7 @@ summarize_records = function(
             if(!inherits(test1, "try-error") & sum(!is.na(x)) > 3)
             {
               return(test1)
-            } else return(NA)
+            } else return(NA_real_)
           },
           "97.5% quantile" = function(x)
           {
@@ -292,7 +293,7 @@ summarize_records = function(
             if(!inherits(test1, "try-error") & sum(!is.na(x)) > 3)
             {
               return(test1)
-            } else return(NA)
+            } else return(NA_real_)
           },
           "95% CI low" =
             function(x)
@@ -303,7 +304,7 @@ summarize_records = function(
               if(!inherits(test1, "try-error") & sum(!is.na(x)) > 3)
               {
                 return(test1$conf.int[1])
-              } else return(NA)
+              } else return(NA_real_)
             },
           "95% CI high" =
             function(x)
@@ -312,7 +313,7 @@ summarize_records = function(
               if(!inherits(test1, "try-error") & sum(!is.na(x)) > 3)
               {
                 return(test1$conf.int[2])
-              } else return(NA)
+              } else return(NA_real_)
             }
         ),
         .names = "{col}.{fn}"))
@@ -329,7 +330,7 @@ summarize_records = function(
           .data$date >= min(.data$date[.data$school_day]) - days(1),
           .data$`% of schools with no on-campus transmissions so far`,
           as.numeric(NA)),
-      across(where(is.numeric), signif, digits = 4))
+      across(where(is.numeric), function(x) signif(x, digits = 4)))
   
   names(average_class_data_by_day) = 
     sub(

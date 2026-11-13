@@ -323,8 +323,7 @@ run_simulation = function(
       print(test_curve)
         
       
-      library('readr')
-      write_csv(dat1, file =
+      readr::write_csv(dat1, file =
                   path(results_path, "test sensitivity by infection duration.csv"))
       
       # pdf(path(results_path, "test sensitivity by infection duration.pdf"))
@@ -495,8 +494,7 @@ run_simulation = function(
       students = 
         classes %>%
         group_by(school, class) %>%
-        summarise(
-          .groups = "drop", 
+        reframe(
           "student_number_in_class" = 1:n_students_on_roster,
           "close_contact_group" = ((.data$student_number_in_class - 1) %/% n_close_contacts_in_class) + 1, 
           # if the number of students in class isn't divisible by `n_close_contacts_in_class`, 
@@ -585,9 +583,13 @@ run_simulation = function(
       
       household_adults = 
         households %>% 
-        summarise(
+        reframe(
           .by = "household_ID",
-          ID = paste(.data$household_ID, ":A", 1:.data$n_adults_in_household, sep = ""))
+          ID = paste(.data$household_ID, ":A", 1:.data$n_adults_in_household, sep = "")) %>%
+        # `.by` keeps households in order of first appearance, but the
+        # downstream random draws were defined with households sorted by ID
+        # (as `group_by()` returns them); sort to keep seeded results stable:
+        arrange(.data$household_ID)
       
       household_adults =
         initialize_agents(
@@ -655,7 +657,7 @@ run_simulation = function(
         
         cur_date = calendar[i, "date", drop = TRUE]
         
-        message("Starting simulation of date ", cur_date, ", day ", i, " of ", nrow(calendar), "\n(Real time: ", Sys.time(), "; mem used = ", round(mem_used()/10^6, 1), " MB)")
+        message("Starting simulation of date ", cur_date, ", day ", i, " of ", nrow(calendar), "\n(Real time: ", Sys.time(), "; mem used = ", round(as.numeric(lobstr::mem_used())/10^6, 1), " MB)")
         
         if(in_shiny)
         {
@@ -1188,7 +1190,7 @@ run_simulation = function(
                  ))
           
           print(addmargins(cur_table))
-          print(proportions(cur_table, m = 1))
+          print(proportions(cur_table, margin = 1))
         
         }
         
@@ -1228,14 +1230,14 @@ run_simulation = function(
                 "n_recovered_students_in_classroom_today" = 
                   sum(.data$in_school_today & 
                         .data$infected & 
-                        .data$days_since_infected > .data$last_symptomatic_day)))
+                        .data$days_since_infected > .env$last_symptomatic_day)))
         
         close_contact_groups = 
           students %>%
           summarize(
             .by = c("class", "close_contact_group"),
             n_infectious_close_contacts_in_school_today = 
-              (.data$n_close_contacts_in_class > 0) * 
+              (.env$n_close_contacts_in_class > 0) * 
               sum(.data$in_school_today & .data$infectious_today))
         
         students %<>% 
@@ -1252,8 +1254,8 @@ run_simulation = function(
             
             pr_infected_from_school_today = 
               1 - 
-              (1 - .data$risk_per_infected_close_contact)^.data$n_infectious_close_contacts_in_school_today *
-              (1 - .data$risk_per_infected_classmate)^(.data$n_infectious_students_in_classroom_today),
+              (1 - .env$risk_per_infected_close_contact)^.data$n_infectious_close_contacts_in_school_today *
+              (1 - .env$risk_per_infected_classmate)^(.data$n_infectious_students_in_classroom_today),
             
             # TODO: consider simulating the possibility of re-infection after recovery
             infected_from_school_today =
@@ -1298,7 +1300,7 @@ run_simulation = function(
                   sum(!.data$in_school_today),
                 
                 n_preinfectious_students_in_class_today = 
-                  sum(.data$in_school_today & .data$infected & .data$days_since_infected < .data$first_infectious_day),
+                  sum(.data$in_school_today & .data$infected & .data$days_since_infected < .env$first_infectious_day),
                 
                 n_transmissions_in_class_today = 
                   sum(.data$infected_from_school_today)))
@@ -1614,7 +1616,7 @@ run_simulation = function(
               with(new_student_tests, table(infected, test_result))
                    
             print(cur_table) # can't add margins easily, might be no tests
-            print(proportions(cur_table, m = 1))
+            print(proportions(cur_table, margin = 1))
             
           }
           
