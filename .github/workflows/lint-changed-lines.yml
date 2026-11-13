@@ -8,6 +8,6 @@ on:
 
 jobs:
   lint:
-    uses: Morrison-Lab/gha/.github/workflows/lint-changed-lines.yml@v2
+    uses: Morrison-Lab/gha/.github/workflows/lint-changed-lines.yml@v3
     with:
       lms-ref: f777ed8afcaf70a9054a7b5e19207270ef253623
