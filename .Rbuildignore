@@ -17,3 +17,5 @@ $run_dev.*
 ^misc$
 ^renv$
 ^renv\.lock$
+^AGENTS\.md$
+^\.claude$
