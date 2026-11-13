@@ -19,3 +19,4 @@ $run_dev.*
 ^renv\.lock$
 ^analyses$
 ^\.rscignore$
+^\.lintr\.R$

@@ -1,3 +1,13 @@
+# school.epi.abm 0.0.0.9007
+
+* Package code follows the lab style guide
+  (<https://morrison-lab.github.io/psc/>): the native pipe `|>` replaces
+  magrittr pipes (so the package now needs R >= 4.1.0 and no longer
+  imports magrittr), `<-` replaces `=` for assignment, lines are wrapped
+  at 80 characters, and commented-out code is removed.
+* A `.lintr.R` file applies the lab's shared linters from the `lms`
+  package. Seeded simulation results are unchanged.
+
 # school.epi.abm 0.0.0.9006
 
 * Every exported function and the `day.name` dataset are documented,

@@ -1,6 +1,6 @@
 Package: school.epi.abm
 Title: A model of infectious disease epidemic and mitigation dynamics in K-6 schools
-Version: 0.0.0.9006
+Version: 0.0.0.9007
 Authors@R: 
     person(given = "Douglas Ezra",
            family = "Morrison",
@@ -23,7 +23,6 @@ Imports:
     knitr,
     lemon,
     lubridate,
-    magrittr,
     pkgload,
     plotly,
     lobstr,
@@ -44,7 +43,7 @@ Suggests:
     testthat (>= 3.0.0),
     withr
 Depends: 
-    R (>= 2.10)
+    R (>= 4.1.0)
 URL: https://ucla-php.github.io/school.epi.abm/,
     https://github.com/UCLA-PHP/school.epi.abm
 BugReports: https://github.com/UCLA-PHP/school.epi.abm/issues
