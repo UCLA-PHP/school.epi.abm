@@ -6,8 +6,7 @@ initialize_classes = function(
   classes = 
     schools %>%
     group_by(school) %>%
-    summarise(
-      .groups = "drop", 
+    reframe(
       class = paste(school, 1:n_classes_in_school, sep = ":")) %>% 
     mutate(
       n_students_on_roster = n_students_per_class,

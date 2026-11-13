@@ -323,8 +323,7 @@ run_simulation = function(
       print(test_curve)
         
       
-      library('readr')
-      write_csv(dat1, file =
+      readr::write_csv(dat1, file =
                   path(results_path, "test sensitivity by infection duration.csv"))
       
       # pdf(path(results_path, "test sensitivity by infection duration.pdf"))
@@ -495,8 +494,7 @@ run_simulation = function(
       students = 
         classes %>%
         group_by(school, class) %>%
-        summarise(
-          .groups = "drop", 
+        reframe(
           "student_number_in_class" = 1:n_students_on_roster,
           "close_contact_group" = ((student_number_in_class - 1) %/% n_close_contacts_in_class) + 1, 
           # if the number of students in class isn't divisible by `n_close_contacts_in_class`, 
@@ -586,8 +584,7 @@ run_simulation = function(
       household_adults = 
         households %>% 
         group_by(household_ID) %>%
-        summarise(
-          .groups = "drop",
+        reframe(
           ID = paste(household_ID, ":A", 1:n_adults_in_household, sep = ""))
       
       household_adults =
@@ -656,7 +653,7 @@ run_simulation = function(
         
         cur_date = calendar[i, "date", drop = TRUE]
         
-        message("Starting simulation of date ", cur_date, ", day ", i, " of ", nrow(calendar), "\n(Real time: ", Sys.time(), "; mem used = ", round(mem_used()/10^6, 1), " MB)")
+        message("Starting simulation of date ", cur_date, ", day ", i, " of ", nrow(calendar), "\n(Real time: ", Sys.time(), "; mem used = ", round(as.numeric(lobstr::mem_used())/10^6, 1), " MB)")
         
         if(in_shiny)
         {
@@ -1195,7 +1192,7 @@ run_simulation = function(
                  ))
           
           print(addmargins(cur_table))
-          print(proportions(cur_table, m = 1))
+          print(proportions(cur_table, margin = 1))
         
         }
         
@@ -1624,7 +1621,7 @@ run_simulation = function(
               with(new_student_tests, table(infected, test_result))
                    
             print(cur_table) # can't add margins easily, might be no tests
-            print(proportions(cur_table, m = 1))
+            print(proportions(cur_table, margin = 1))
             
           }
           
