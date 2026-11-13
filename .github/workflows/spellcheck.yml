@@ -13,4 +13,4 @@ concurrency:
 
 jobs:
   spellcheck:
-    uses: Morrison-Lab/gha/.github/workflows/spellcheck.yml@v2
+    uses: Morrison-Lab/gha/.github/workflows/spellcheck.yml@v3
