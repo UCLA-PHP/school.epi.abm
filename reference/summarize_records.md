@@ -1,0 +1,75 @@
+# Summarize class records by day
+
+Aggregates the class-level records from
+[`run_simulation()`](https://ucla-php.github.io/school.epi.abm/reference/run_simulation.md)
+to schools, and then averages across schools for each simulated day,
+with quantile intervals.
+
+## Usage
+
+``` r
+summarize_records(
+  class_records,
+  label_columns = c("date", "day_of_week", "school_day", "surveillance testing today",
+    "school", "class"),
+  summary_grouping_columns = c("date", "school_day"),
+  school_records_by_date = summarize(class_records, .by = c("date", "school_day",
+    "school"), n_classes_in_school = n(), n_classes_quarantined_today =
+    sum(.data$class_quarantined_today), across(any_of(c("n_students_quarantined_today",
+    "n households associated with class",
+    "n households with positive attestations today",
+    "n households that have received outreach",
+    "n_household_adults_associated_with_class",
+    "n household adults educated about COVID safety",
+    "n household adults newly infected today",
+    "n household adults infected from exogenous source today", 
+    
+    "n household adults infected by student today",
+    "n household adults infected (cumulative)",
+    "n household adults infected from exogenous sources (cumulative)",
+    "n household adults infected since baseline (cumulative)",
+    "n household adults infected by student (cumulative)",
+    "n household adults infected by other household adult (cumulative)",
+    "n_symptomatic_students_in_classroom_today", "n_students_in_attendance_today",
+    "n_students_on_roster", "n students newly infected today",
+    "n students educated about COVID safety (cumulative)", 
+    
+    "n_students_infected_cumulative", "n_students_infected_since_baseline_cumulative",
+    "n students infected from exogenous sources (cumulative)",
+    "n students infected by household adult (cumulative)",
+    "n_students_infected_outside_school_cumulative",
+    "n_transmissions_in_class_cumulative", "n_outbreaks",
+    "n_initially_uninfected_students_in_classroom_today",
+    "n_transmissions_in_class_today",
+    "n students newly infected from exogenous source today",
+    "n_infectious_students_in_classroom_today", "n_students_at_home_today", 
+    
+    "n_uninfectious_students_at_home_today", "n_infectious_students_at_home_today",
+    "n_initially_infected_students_in_classroom_today")), sum))
+)
+```
+
+## Arguments
+
+- class_records:
+
+  the `class_records` element of the list returned by
+  [`run_simulation()`](https://ucla-php.github.io/school.epi.abm/reference/run_simulation.md)
+
+- label_columns:
+
+  columns of `class_records` that label rows rather than hold outcomes,
+  and so are not summarized
+
+- summary_grouping_columns:
+
+  columns to group by when averaging across schools
+
+- school_records_by_date:
+
+  school-level daily records; by default, computed from `class_records`
+
+## Value
+
+a data frame with one row per simulated day, holding the mean across
+schools of each outcome and its quantile intervals
