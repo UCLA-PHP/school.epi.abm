@@ -1,81 +1,171 @@
 #' Run the agent-based model
 #'
-#' @param n_schools 
-#' @param n_grades_per_school 
-#' @param n_classes_per_school 
-#' @param n_students_per_class 
-#' @param n_weeks_in_time_window 
-#' @param pr_student_infected_per_infectious_household_adult_per_day 
-#' @param pr_household_adult_infected_by_infectious_student_per_day 
-#' @param pr_household_adult_infected_per_infectious_household_adult_per_day 
-#' @param pr_student_symptomatic_if_infected 
-#' @param pr_adult_symptomatic_if_infected 
-#' @param test_specificity 
-#' @param test_sensitivity_day_0 
-#' @param test_sensitivity_day_1 
-#' @param attestation_sensitivity_symptomatic 
-#' @param attestation_sensitivity_asymptomatic 
-#' @param attestation_sensitivity_presymptomatic 
-#' @param attestation_specificity 
-#' @param baseline_prevalence_of_covid_safety_education 
-#' @param pr_become_educated_after_outreach 
-#' @param baseline_prevalence_adults 
-#' @param baseline_prevalence_students 
-#' @param baseline_cumulative_incidence_adults 
-#' @param baseline_cumulative_incidence_students 
-#' @param baseline_recovered_adults 
-#' @param baseline_recovered_students 
-#' @param baseline_vaccinated_adults 
-#' @param baseline_vaccinated_students 
-#' @param increase_in_accuracy_after_education 
-#' @param decrease_in_exogenous_risk_after_education 
-#' @param adult_exogenous_infection_risk_per_day_without_education 
-#' @param adult_exogenous_infection_risk_per_day_with_education 
-#' @param student_exogenous_infection_risk_per_day_without_education 
-#' @param student_exogenous_infection_risk_per_day_with_education 
-#' @param risk_per_infected_close_contact 
-#' @param risk_per_infected_classmate 
-#' @param testing_fraction 
-#' @param first_infectious_day 
-#' @param last_infectious_day 
-#' @param n_days_infectious 
-#' @param first_symptomatic_day 
-#' @param last_symptomatic_day 
-#' @param last_active_infection_day 
-#' @param quarantine_length_after_adult_positive_test 
-#' @param quarantine_length_after_student_positive_test 
-#' @param quarantine_length_after_positive_attestation 
-#' @param quarantine_length_after_outbreak 
-#' @param in_person_school_start_date 
-#' @param wait_time_for_surveillance_test_results 
-#' @param wait_time_for_attestation_triggered_test_results 
-#' @param wait_time_for_household_education_after_positive_attestation 
-#' @param wait_time_for_testing_after_outreach 
-#' @param surveillance_testing_days 
-#' @param days_from_baseline_collection_until_baseline_return 
-#' @param baseline_return_date 
-#' @param baseline_collection_date 
-#' @param n_students_recently_in_class_and_diagnosed_for_outbreak 
-#' @param cluster_time_window 
-#' @param n_adults_per_household 
-#' @param browse_at_start_of_days 
-#' @param browse_before_return 
-#' @param n_close_contacts_in_class 
-#' @param print_args 
-#' @param verbose 
-#' @param plot_data 
-#' @param plot3_ymax 
-#' @param in_shiny used to provide progress reporting to the dashboard when running the model through the Shiny GUI
-#' @param `test sensitivity day 2` 
-#' @param `test sensitivity day 3` 
-#' @param `test sensitivity day 4` 
-#' @param `peak test sensitivity` The maximum test sensitivity achieved during an infection
-#' @param `days of peak test sensitivity` 
-#' @param `test sensitivity on last day of symptoms` 
-#' @param `daily decrease in sensitivity from peak until recovery` 
-#' @param `decrease in sensitivity per day after recovery` 
+#' Simulates COVID-19 transmission among students in K-6 classrooms and the
+#' adults in their households, under a chosen combination of surveillance
+#' testing, symptom attestation, quarantine, and COVID-safety education
+#' outreach. The model is described in Morrison et al. (2023),
+#' <https://doi.org/10.3389/fpubh.2023.856940>.
 #'
-#' @return
+#' Probabilities are on the 0--1 scale. Durations and offsets are
+#' [lubridate::days()] periods unless noted otherwise.
+#'
+#' @param n_schools number of schools to simulate
+#' @param n_grades_per_school number of grades in each school
+#' @param n_classes_per_school number of classes in each school
+#' @param n_students_per_class number of students enrolled in each class
+#' @param n_weeks_in_time_window number of weeks to simulate after
+#'   in-person school starts
+#' @param pr_student_infected_per_infectious_household_adult_per_day daily
+#'   probability that a student is infected by each infectious adult in their
+#'   household
+#' @param pr_household_adult_infected_by_infectious_student_per_day daily
+#'   probability that a household adult is infected by an infectious student
+#'   in the household
+#' @param pr_household_adult_infected_per_infectious_household_adult_per_day
+#'   daily probability that a household adult is infected by each other
+#'   infectious adult in the household
+#' @param pr_student_symptomatic_if_infected probability that an infected
+#'   student develops symptoms
+#' @param pr_adult_symptomatic_if_infected probability that an infected adult
+#'   develops symptoms
+#' @param test_specificity probability that a test of an uninfected person is
+#'   negative
+#' @param test_sensitivity_day_0 probability of a positive test on the day of
+#'   infection
+#' @param test_sensitivity_day_1 probability of a positive test one day after
+#'   infection
+#' @param `test sensitivity day 2` probability of a positive test two days
+#'   after infection
+#' @param `test sensitivity day 3` probability of a positive test three days
+#'   after infection
+#' @param `test sensitivity day 4` probability of a positive test four days
+#'   after infection
+#' @param `peak test sensitivity` the maximum test sensitivity achieved during
+#'   an infection, reached after day 4
+#' @param `days of peak test sensitivity` how long test sensitivity stays at
+#'   its peak
+#' @param `test sensitivity on last day of symptoms` test sensitivity on
+#'   `last_active_infection_day`
+#' @param `daily decrease in sensitivity from peak until recovery` daily change
+#'   in test sensitivity between the end of the peak and
+#'   `last_active_infection_day` (negative for a decrease)
+#' @param `decrease in sensitivity per day after recovery` daily decrease in
+#'   test sensitivity after `last_active_infection_day`
+#' @param attestation_sensitivity_symptomatic probability that a household
+#'   with a symptomatic member reports it on the daily attestation
+#' @param attestation_sensitivity_asymptomatic probability of a positive
+#'   attestation for an asymptomatic infection, representing attestations due
+#'   to known exposures
+#' @param attestation_sensitivity_presymptomatic probability of a positive
+#'   attestation for a presymptomatic infection
+#' @param attestation_specificity probability that a household with no
+#'   infection gives a negative attestation
+#' @param baseline_prevalence_of_covid_safety_education proportion of
+#'   households that have COVID-safety education at the start of the
+#'   simulation
+#' @param pr_become_educated_after_outreach probability that a household
+#'   becomes educated about COVID safety after receiving outreach
+#' @param baseline_prevalence_adults proportion of adults actively infected at
+#'   baseline
+#' @param baseline_prevalence_students proportion of students actively
+#'   infected at baseline
+#' @param baseline_cumulative_incidence_adults proportion of adults ever
+#'   infected by baseline
+#' @param baseline_cumulative_incidence_students proportion of students ever
+#'   infected by baseline
+#' @param baseline_recovered_adults proportion of adults recovered (and
+#'   immune) at baseline
+#' @param baseline_recovered_students proportion of students recovered (and
+#'   immune) at baseline
+#' @param baseline_vaccinated_adults proportion of adults vaccinated (and
+#'   immune) at baseline
+#' @param baseline_vaccinated_students proportion of students vaccinated (and
+#'   immune) at baseline
+#' @param increase_in_accuracy_after_education proportional increase in
+#'   attestation accuracy after COVID-safety education: the new accuracy is
+#'   `a + (1 - a) * increase_in_accuracy_after_education`, where `a` is the
+#'   accuracy before education
+#' @param decrease_in_exogenous_risk_after_education proportional decrease in
+#'   daily infection risk from outside the school and household after
+#'   COVID-safety education
+#' @param adult_exogenous_infection_risk_per_day_without_education daily
+#'   probability that an adult without COVID-safety education is infected
+#'   outside the school and household
+#' @param adult_exogenous_infection_risk_per_day_with_education daily
+#'   probability that an adult with COVID-safety education is infected outside
+#'   the school and household
+#' @param student_exogenous_infection_risk_per_day_without_education daily
+#'   probability that a student without COVID-safety education is infected
+#'   outside the school and household
+#' @param student_exogenous_infection_risk_per_day_with_education daily
+#'   probability that a student with COVID-safety education is infected
+#'   outside the school and household
+#' @param risk_per_infected_close_contact daily probability that a student is
+#'   infected by each infectious close contact in their class
+#' @param risk_per_infected_classmate daily probability that a student is
+#'   infected by each infectious classmate
+#' @param testing_fraction proportion of each school's enrolled students
+#'   tested on each surveillance testing day
+#' @param first_infectious_day time from infection until a person becomes
+#'   infectious
+#' @param last_infectious_day time from infection until a person stops being
+#'   infectious
+#' @param n_days_infectious number of days a person is infectious
+#' @param first_symptomatic_day time from infection until symptoms start, for
+#'   symptomatic infections
+#' @param last_symptomatic_day time from infection until symptoms end, for
+#'   symptomatic infections
+#' @param last_active_infection_day time from infection until the infection
+#'   resolves
+#' @param quarantine_length_after_adult_positive_test how long a student
+#'   quarantines after a household adult tests positive
+#' @param quarantine_length_after_student_positive_test how long a student
+#'   quarantines after testing positive
+#' @param quarantine_length_after_positive_attestation how long a student
+#'   quarantines after a positive attestation
+#' @param quarantine_length_after_outbreak how long a class quarantines after
+#'   an outbreak is detected
+#' @param in_person_school_start_date the date in-person school starts (a
+#'   [base::Date])
+#' @param wait_time_for_surveillance_test_results time from a surveillance
+#'   test until its result is returned
+#' @param wait_time_for_attestation_triggered_test_results time from a test
+#'   triggered by a positive attestation until its result is returned
+#' @param wait_time_for_household_education_after_positive_attestation time
+#'   from a positive attestation until the household receives outreach
+#' @param wait_time_for_testing_after_outreach time from outreach until the
+#'   household is tested
+#' @param surveillance_testing_days names of the weekdays on which
+#'   surveillance testing happens, such as `"Monday"`
+#' @param days_from_baseline_collection_until_baseline_return time from
+#'   baseline test collection until baseline results are returned
+#' @param baseline_return_date the date baseline test results are returned (a
+#'   [base::Date])
+#' @param baseline_collection_date the date baseline tests are collected (a
+#'   [base::Date])
+#' @param n_students_recently_in_class_and_diagnosed_for_outbreak number of
+#'   students in one class diagnosed within `cluster_time_window` that counts
+#'   as an outbreak
+#' @param cluster_time_window time window for counting diagnoses toward an
+#'   outbreak
+#' @param n_adults_per_household number of adults in each student's household
+#' @param browse_at_start_of_days if `TRUE`, call [browser()] at the start of
+#'   each simulated day (for debugging)
+#' @param browse_before_return if `TRUE`, call [browser()] before returning
+#'   (for debugging)
+#' @param n_close_contacts_in_class size of the close-contact groups that each
+#'   class is divided into
+#' @param print_args if `TRUE`, print every argument value at the start
+#' @param verbose if `TRUE`, print progress messages
+#' @param plot_data if `TRUE`, plot interim results each simulated school day
+#' @param plot3_ymax minimum upper limit of the y-axis for the interim plot of
+#'   student infection rates
+#' @param in_shiny used to provide progress reporting to the dashboard when
+#'   running the model through the Shiny GUI
+#'
+#' @returns a list with elements `class_records`, a data frame with one row
+#'   per class per simulated day, and `inputs`, a list of the argument values
+#'   used
 #' @export
 #'
 run_simulation = function(

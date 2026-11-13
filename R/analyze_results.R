@@ -1,8 +1,13 @@
-#' Title
+#' Summarize a simulation's final outcomes
 #'
-#' @param simulation_outputs 
+#' Combines the inputs of one [run_simulation()] call with its cumulative
+#' outcomes on the last simulated day, as one row per simulation.
 #'
-#' @return
+#' @param simulation_outputs the list returned by [run_simulation()]
+#'
+#' @returns a one-row data frame of inputs and final cumulative outcomes,
+#'   with formatted "summary" columns giving each outcome's mean and
+#'   quantile interval
 #' @export
 #'
 analyze_results = function(simulation_outputs)

@@ -2,16 +2,16 @@
 % Please edit documentation in R/summarize_class_records.R
 \name{summarize_records}
 \alias{summarize_records}
-\title{Title}
+\title{Summarize class records by day}
 \usage{
 summarize_records(
   class_records,
   label_columns = c("date", "day_of_week", "school_day", "surveillance testing today",
     "school", "class"),
   summary_grouping_columns = c("date", "school_day"),
-  school_records_by_date = class_records \%>\% group_by(date, school_day, school) \%>\%
-    summarize(.groups = "drop", n_classes_in_school = n(), n_classes_quarantined_today =
-    sum(class_quarantined_today), across(any_of(c("n_students_quarantined_today",
+  school_records_by_date = class_records \%>\% summarize(.by = c("date", "school_day",
+    "school"), n_classes_in_school = n(), n_classes_quarantined_today =
+    sum(.data$class_quarantined_today), across(any_of(c("n_students_quarantined_today",
     "n households associated with class",
     "n households with positive attestations today",
     "n households that have received outreach",
@@ -45,14 +45,24 @@ summarize_records(
 )
 }
 \arguments{
-\item{class_records}{}
+\item{class_records}{the \code{class_records} element of the list returned by
+\code{\link[=run_simulation]{run_simulation()}}}
 
-\item{label_columns}{}
+\item{label_columns}{columns of \code{class_records} that label rows rather
+than hold outcomes, and so are not summarized}
 
-\item{summary_grouping_columns}{}
+\item{summary_grouping_columns}{columns to group by when averaging across
+schools}
 
-\item{school_records_by_date}{}
+\item{school_records_by_date}{school-level daily records; by default,
+computed from \code{class_records}}
+}
+\value{
+a data frame with one row per simulated day, holding the mean
+across schools of each outcome and its quantile intervals
 }
 \description{
-Title
+Aggregates the class-level records from \code{\link[=run_simulation]{run_simulation()}} to schools, and
+then averages across schools for each simulated day, with quantile
+intervals.
 }

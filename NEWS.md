@@ -1,3 +1,8 @@
+# school.epi.abm 0.0.0.9006
+
+* Every exported function and the `day.name` dataset are documented,
+  including all of `run_simulation()`'s arguments.
+
 # school.epi.abm 0.0.0.9005
 
 * `DESCRIPTION` and `citation("school.epi.abm")` now cite the published

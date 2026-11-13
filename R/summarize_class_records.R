@@ -1,14 +1,22 @@
-#' Title
+#' Summarize class records by day
 #'
-#' @param class_records 
-#' @param label_columns 
-#' @param summary_grouping_columns 
-#' @param school_records_by_date 
+#' Aggregates the class-level records from [run_simulation()] to schools, and
+#' then averages across schools for each simulated day, with quantile
+#' intervals.
 #'
-#' @return
+#' @param class_records the `class_records` element of the list returned by
+#'   [run_simulation()]
+#' @param label_columns columns of `class_records` that label rows rather
+#'   than hold outcomes, and so are not summarized
+#' @param summary_grouping_columns columns to group by when averaging across
+#'   schools
+#' @param school_records_by_date school-level daily records; by default,
+#'   computed from `class_records`
+#'
+#' @returns a data frame with one row per simulated day, holding the mean
+#'   across schools of each outcome and its quantile intervals
 #' @export
 #'
-
 summarize_records = function(
   class_records,
   label_columns = c(

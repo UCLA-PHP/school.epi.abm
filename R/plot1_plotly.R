@@ -1,15 +1,21 @@
-#' Title
+#' Plot simulated outcomes over time
 #'
-#' @param class_records 
-#' @param average_class_data_by_day 
-#' @param plot3_ymax 
-#' @param plot4_ymax 
-#' @param plot5_ymax 
-#' @param x1 
-#' @param x2 
-#' @param x3 
+#' Draws interactive plots of daily and cumulative infection, quarantine and
+#' outreach outcomes for students and household adults.
 #'
-#' @return
+#' @param class_records the `class_records` element of the list returned by
+#'   [run_simulation()]
+#' @param average_class_data_by_day daily summaries of `class_records`, as
+#'   returned by [summarize_records()]
+#' @param plot3_ymax minimum upper limit of the y-axis for student infection
+#'   rates
+#' @param plot4_ymax minimum upper limit of the y-axis for household adult
+#'   infection rates
+#' @param plot5_ymax minimum upper limit of the y-axis for quarantine and
+#'   outreach outcomes
+#' @param x1,x2,x3 currently unused
+#'
+#' @returns a plotly figure
 #' @export
 #'
 plot1_plotly = function(
