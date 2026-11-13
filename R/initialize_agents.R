@@ -13,37 +13,37 @@ initialize_agents = function(
   
   agents %<>% 
     mutate(
-      "recovered" = ID %in% 
+      "recovered" = .data$ID %in% 
         sample(
           replace = FALSE,
-          x = ID,
+          x = .data$ID,
           size = round(n() * pr_recovered_baseline)),
       
-      "vaccinated" = ID %in% 
+      "vaccinated" = .data$ID %in% 
         sample(
           replace = FALSE,
-          x = ID[!recovered],
-          size = round(sum(!recovered) * pr_vaccinated_baseline)),
+          x = .data$ID[!.data$recovered],
+          size = round(sum(!.data$recovered) * pr_vaccinated_baseline)),
       
-      "immune" = recovered | vaccinated,
+      "immune" = .data$recovered | .data$vaccinated,
       
       "active_infection" = 
-        ID %in%
+        .data$ID %in%
         sample(
           replace = FALSE,
           size = round(n() * pr_active_infection_baseline),
-          x = ID[!immune]),
+          x = .data$ID[!.data$immune]),
       
-      "infected_at_baseline" = recovered | active_infection,
+      "infected_at_baseline" = .data$recovered | .data$active_infection,
       
-      "infected" = infected_at_baseline,
+      "infected" = .data$infected_at_baseline,
       
       infection_date = 
         if_else(
-          recovered,
+          .data$recovered,
           as.Date(baseline_collection_date) - days(15),      
           if_else(
-            active_infection,
+            .data$active_infection,
             sample(
               baseline_infection_date_distribution, 
               size = n(), 
@@ -51,7 +51,7 @@ initialize_agents = function(
             as.Date(NA))),
       
       "infection_source" = if_else(
-        infected,
+        .data$infected,
         "infected at baseline",
         as.character(NA)),
       
@@ -61,25 +61,25 @@ initialize_agents = function(
       
       
       "has_covid_safety_education" = 
-        ID %in%
+        .data$ID %in%
         sample(
           replace = FALSE,
-          x = ID,
+          x = .data$ID,
           size = round(n() * baseline_prevalence_of_covid_safety_education)),
       
       "receptive_to_outreach" =
-        has_covid_safety_education | 
-        ID %in%
+        .data$has_covid_safety_education | 
+        .data$ID %in%
         sample(
           replace = FALSE,
-          x = ID,
+          x = .data$ID,
           size = round(n() * pr_receptive_to_outreach)),
       
       "symptomatic_if_infected" = 
-        ID %in%
+        .data$ID %in%
         sample(
           replace = FALSE,
-          x = ID,
+          x = .data$ID,
           size = round(n() * pr_symptomatic_if_infected))
       
     )

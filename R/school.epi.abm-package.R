@@ -1,5 +1,6 @@
 #' @keywords internal
 #' @import dplyr
+#' @importFrom rlang .data .env
 #' @importFrom shiny tags
 #' @importFrom plotly plotlyOutput renderPlotly
 #' @importFrom shiny tagList tags HTML h2 fluidRow uiOutput
@@ -10,6 +11,7 @@
 #' @importFrom useful build.formula
 #' @importFrom shiny renderUI mainPanel h1 p br a observeEvent eventReactive withProgress
 #' @importFrom shinydashboard updateTabItems
+#' @importFrom stats addmargins quantile sd t.test
 
 "_PACKAGE"
 
