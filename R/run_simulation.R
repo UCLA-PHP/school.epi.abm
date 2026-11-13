@@ -4,7 +4,7 @@
 #' adults in their households, under a chosen combination of surveillance
 #' testing, symptom attestation, quarantine, and COVID-safety education
 #' outreach. The model is described in Morrison et al. (2023),
-#' <https://doi.org/10.3389/fpubh.2023.856940>.
+#' \doi{10.3389/fpubh.2023.856940}.
 #'
 #' Probabilities are on the 0--1 scale. Durations and offsets are
 #' [lubridate::days()] periods unless noted otherwise.
@@ -515,9 +515,9 @@ run_simulation <- function(
 
       students <-
         classes |>
-        group_by(school, class) |>
+        group_by(.data$school, .data$class) |>
         reframe(
-          "student_number_in_class" = 1:n_students_on_roster,
+          "student_number_in_class" = seq_len(.data$n_students_on_roster),
           "close_contact_group" =
           ((.data$student_number_in_class - 1) %/% n_close_contacts_in_class) +
           1,
@@ -653,12 +653,13 @@ run_simulation <- function(
             in_person_school_start_date + days(n_weeks_in_time_window * 7 - 1),
           by = "day"
         ),
-        "day_of_week" = weekdays(date),
+        "day_of_week" = weekdays(.data$date),
         "school_day" =
-          day_of_week %in% day.name[1:5] & date >= in_person_school_start_date,
+          .data$day_of_week %in% school.epi.abm::day.name[1:5] &
+          .data$date >= in_person_school_start_date,
         "surveillance testing today" =
-          day_of_week %in% unlist(surveillance_testing_days) &
-          date >= in_person_school_start_date
+          .data$day_of_week %in% unlist(surveillance_testing_days) &
+          .data$date >= in_person_school_start_date
       )
     }
 
@@ -708,15 +709,15 @@ run_simulation <- function(
 
         transmissions_per_school <-
           students |>
-          group_by(school) |>
+          group_by(.data$school) |>
           summarize(
             .groups = "drop",
             n_transmissions =
-            sum(infection_source == "from school", na.rm = TRUE)
+            sum(.data$infection_source == "from school", na.rm = TRUE)
           ) |>
           summarize(
             pct_no_transmissions =
-            mean(n_transmissions == 0) * 100
+            mean(.data$n_transmissions == 0) * 100
           ) |>
           unlist()
 
@@ -875,7 +876,7 @@ run_simulation <- function(
             sum(
               students$ID %in%
                 (test_results |>
-                   filter(result_date == cur_date))$ID
+                   filter(.data$result_date == cur_date))$ID
             ),
             " students received test results today."
           )
@@ -886,7 +887,7 @@ run_simulation <- function(
             sum(
               students$ID %in%
                 (test_results |>
-                   filter(result_date == cur_date, test_result))$ID
+                   filter(.data$result_date == cur_date, .data$test_result))$ID
             ),
             " students received positive COVID test results today."
           )
@@ -1200,8 +1201,8 @@ run_simulation <- function(
         test_results <- test_results |>
           bind_rows(
             new_tests |>
-              select(ID, infection_date, collection_date, result_date,
-                     test_type, test_result)
+              select("ID", "infection_date", "collection_date", "result_date",
+                     "test_type", "test_result")
           )
 
         if (verbose) {

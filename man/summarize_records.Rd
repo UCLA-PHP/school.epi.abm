@@ -9,7 +9,7 @@ summarize_records(
   label_columns = c("date", "day_of_week", "school_day", "surveillance testing today",
     "school", "class"),
   summary_grouping_columns = c("date", "school_day"),
-  school_records_by_date = class_records \%>\% summarize(.by = c("date", "school_day",
+  school_records_by_date = summarize(class_records, .by = c("date", "school_day",
     "school"), n_classes_in_school = n(), n_classes_quarantined_today =
     sum(.data$class_quarantined_today), across(any_of(c("n_students_quarantined_today",
     "n households associated with class",

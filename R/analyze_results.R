@@ -70,8 +70,8 @@ analyze_results <- function(simulation_outputs) {
   }
 
   new_results <- new_results |> relocate(
-    `% of schools with no on-campus transmissions so far`,
-    `% of schools with no detected infection clusters so far`,
+    "% of schools with no on-campus transmissions so far",
+    "% of schools with no detected infection clusters so far",
     .after = last_col()
   )
 

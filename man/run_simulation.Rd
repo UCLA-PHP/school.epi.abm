@@ -331,7 +331,7 @@ Simulates COVID-19 transmission among students in K-6 classrooms and the
 adults in their households, under a chosen combination of surveillance
 testing, symptom attestation, quarantine, and COVID-safety education
 outreach. The model is described in Morrison et al. (2023),
-\url{https://doi.org/10.3389/fpubh.2023.856940}.
+\doi{10.3389/fpubh.2023.856940}.
 }
 \details{
 Probabilities are on the 0--1 scale. Durations and offsets are

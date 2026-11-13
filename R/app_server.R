@@ -92,7 +92,7 @@ app_server <- function(input, output, session) {
             wait_time_for_surveillance_test_results =
               lubridate::days(ceiling(input$wait_time_for_surveillance_test_results)),
             surveillance_testing_days =
-              day.name[1:5][test_days],
+              school.epi.abm::day.name[1:5][test_days],
             cluster_time_window = lubridate::days(input$cluster_time_window),
             n_students_recently_in_class_and_diagnosed_for_outbreak =
               input$n_students_recently_in_class_and_diagnosed_for_outbreak,

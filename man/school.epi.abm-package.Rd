@@ -4,9 +4,9 @@
 \name{school.epi.abm-package}
 \alias{school.epi.abm}
 \alias{school.epi.abm-package}
-\title{school.epi.abm: A model of infectious disease epidemic and mitigation dynamics in K-6 schools}
+\title{school.epi.abm: A Model of Infectious Disease Epidemic and Mitigation Dynamics in K-6 Schools}
 \description{
-This package implements an agent-based model of infectious disease epidemic and mitigation dynamics in K-6 schools, as described in Morrison et al. (2023) \doi{10.3389/fpubh.2023.856940}.
+Implements an agent-based model of infectious disease epidemic and mitigation dynamics in K-6 schools, as described in Morrison et al. (2023) \doi{10.3389/fpubh.2023.856940}.
 }
 \seealso{
 Useful links:

@@ -1,3 +1,15 @@
+# school.epi.abm 0.0.0.9008
+
+* `R CMD check` passes with no warnings. Package code refers to data
+  columns through `.data$` and to the `day.name` dataset by its full name,
+  the help page for `summarize_records()` matches its code again, and the
+  citation in `run_simulation()`'s help uses `\doi{}`.
+* Packages used only by the analysis scripts and the app launcher
+  (conflicted, ggplot2, htmltools, knitr, lemon, pkgload, RColorBrewer,
+  scales) move from Imports to Suggests, and the unused gridExtra is
+  dropped. The Title is in title case. Seeded simulation results are
+  unchanged.
+
 # school.epi.abm 0.0.0.9007
 
 * Package code follows the lab style guide

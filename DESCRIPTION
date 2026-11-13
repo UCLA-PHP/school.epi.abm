@@ -1,34 +1,26 @@
 Package: school.epi.abm
-Title: A model of infectious disease epidemic and mitigation dynamics in K-6 schools
-Version: 0.0.0.9007
+Title: A Model of Infectious Disease Epidemic and Mitigation Dynamics in
+    K-6 Schools
+Version: 0.0.0.9008
 Authors@R: 
     person(given = "Douglas Ezra",
            family = "Morrison",
            role = c("aut", "cre"),
            email = "demorrison@ucdavis.edu")
-Description: This package implements an agent-based model of infectious disease
+Description: Implements an agent-based model of infectious disease
     epidemic and mitigation dynamics in K-6 schools, as described in
     Morrison et al. (2023) <doi:10.3389/fpubh.2023.856940>.
 License: MIT + file LICENSE
 Imports: 
     config,
-    conflicted,
     dplyr (>= 1.1.0),
     fs,
-    ggplot2,
     golem,
-    gridExtra,
     here,
-    htmltools,
-    knitr,
-    lemon,
     lubridate,
-    pkgload,
     plotly,
     lobstr,
-    RColorBrewer,
     rlang,
-    scales,
     shiny,
     shinydashboard,
     stats,
@@ -36,7 +28,15 @@ Imports:
 Encoding: UTF-8
 LazyData: true
 Suggests: 
+    conflicted,
+    ggplot2,
+    htmltools,
+    knitr,
+    lemon,
+    pkgload,
+    RColorBrewer,
     rmarkdown,
+    scales,
     beepr,
     readr,
     DescTools,
